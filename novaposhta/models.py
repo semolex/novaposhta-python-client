@@ -52,8 +52,8 @@ class NovaPoshtaApi(object):
 
 
 class Address(NovaPoshtaApi):
-    """A class representing the Address model of Nova Poshta API.
-    Used for parsing `geodata` like cities, streets etc.
+    """A class representing the `Address` model of Nova Poshta API.
+    Used for parsing `geodata` (like cities, streets etc.).
     """
 
     def get_city_ref(self, city):
@@ -112,6 +112,8 @@ class Address(NovaPoshtaApi):
     def ex_get_streets(self, city):
         """
         Method for fetching all info about streets in provided city.
+        Extended version of `get_streets` method.
+        City name is used instead of ID.
 
         :example:
             ``address = Address()``
@@ -151,6 +153,8 @@ class Address(NovaPoshtaApi):
     def ex_get_street_by_name(self, city, street):
         """
         Method for fetching info about specific street in desired city.
+        Extended version of `get_street_by_name` method.
+        City name is used instead of ID.
 
         :example:
             ``address = Address()``
@@ -198,6 +202,8 @@ class Address(NovaPoshtaApi):
     def ex_get_warehouses(self, city):
         """
         Method for fetching info about all warehouses in desired city.
+        Extended version of `get_warehouses` method.
+        City name is used instead of ID.
 
         :example:
             ``address = Address()``
@@ -267,7 +273,7 @@ class Address(NovaPoshtaApi):
 
 class Counterparty(NovaPoshtaApi):
     """
-    A class representing the Address model of Nova Poshta API.
+    A class representing the `Counterparty` model of Nova Poshta API.
     Used for interact with counterpart's info.
     """
 
@@ -306,7 +312,7 @@ class Counterparty(NovaPoshtaApi):
         :type cp_type:
             str or unicode
         :return:
-            parsed dictionary with info about counterparty
+            dictionary with info about counterparty
         :rtype:
             dict
         """
@@ -315,102 +321,534 @@ class Counterparty(NovaPoshtaApi):
         return req
 
     def get_counterparty_ref(self, name, cp_type='Sender'):
+        """
+        Method for fetching `Ref` (unique counterparty hash) from API, required for other methods.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.get_counterparty_ref(name=u'Талісман', cp_type='Recipient')``
+        :param name:
+            name of the desired counterparty
+        :type name:
+            str or unicode
+        :param cp_type:
+            type of the counterparty: can be either `Sender` or `Recipient` (`Sender` used as default)
+        :type cp_type:
+            str or unicode
+        :return:
+            ID of the counterparty
+        :rtype:
+            unicode
+        """
         props = {'CounterpartyProperty': cp_type, 'FindByString': name}  # separate for a better look :)
-        req = self.send(method='getCounterparties', method_props=props)  # TODO: add ref parsing
+        req = self.send(method='getCounterparties', method_props=props)['data'][0]['Ref']
         return req
 
-    def ex_get_counterparty_by_ERDPOU(self, city, code):
+    def ex_get_counterparty_by_edrpou(self, city, code):
+        """
+        Method for fetching info about counterparty by `EDRPOU` - National State Registry
+        of Ukrainian Enterprises and Organizations (8-digit code).
+        Extended version of `get_counterparty_by_edrpou` method.
+        City name is used instead of ID.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.ex_get_counterparty_by_edrpou(city=u'Здолбунів', code='12345678')``
+        :param city:
+            name of the city of counterparty
+        :type city:
+            str or unicode
+        :param code:
+            EDRPOU code of the counterparty
+        :type code:
+            str or unicode
+        :return:
+            dictionary with info about counterparty
+        :rtype:
+            dict
+        """
         city_ref = Address().get_city_by_name(city)['data'][0]['Ref']
         req = self.send(method='getCounterpartyByEDRPOU', method_props={"CityRef": city_ref, 'EDRPOU': code})
         return req
 
-    def get_counterparty_by_ERDPOU(self, city_ref, code):
+    def get_counterparty_by_edrpou(self, city_ref, code):
+        """
+        Method for fetching info about counterparty by `EDRPOU` - National State Registry
+        of Ukrainian Enterprises and Organizations (8-digit code).
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.get_counterparty_by_edrpou(city_ref=u'0006560c-4079-11de-b509-001d92f78698', code='12345678')``
+        :param city_ref:
+            ID of the city of counterparty
+        :type city_ref:
+            str or unicode
+        :param code:
+            EDRPOU code of the counterparty
+        :type code:
+            str or unicode
+        :return:
+            dictionary with info about counterparty
+        :rtype:
+            dict
+        """
         req = self.send(method='getCounterpartyByEDRPOU', method_props={"CityRef": city_ref, 'EDRPOU': code})
         return req
 
     def ex_get_counterparty_addresses(self, name, cp_type='Sender'):
+        """
+        Method for fetching counterparty's addresses.
+        Extended version of `get_counterparty_addresses` method.
+        Counterparty's name is used instead of ID.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.ex_get_counterparty_addresses(u'Талісман', cp_type='Recipient')``
+        :param name:
+            name of the counterparty
+        :type name:
+            str or unicode
+        :param cp_type:
+            type of the counterparty: can be either `Sender` or `Recipient` (`Sender` used as default)
+        :type cp_type:
+            str or unicode
+        :return:
+            dictionary with info about counterparty's addresses
+        """
         cp_ref = self.get_counterparty_ref(name=name, cp_type=cp_type)
         req = self.send(method='getCounterpartyAddresses',
                         method_props={'Ref': cp_ref, 'CounterpartyProperty': cp_type})
         return req
 
     def get_counterparty_addresses(self, cp_ref, cp_type='Sender'):
+        """
+        Method for fetching counterparty's addresses.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.get_counterparty_addresses(u'f70f1bee-55fd-11e5-8d8d-005056887b8d', cp_type='Recipient')``
+        :param cp_ref:
+            ID of the counterparty
+        :type cp_ref:
+            str or unicode
+        :param cp_type:
+            type of the counterparty: can be either `Sender` or `Recipient` (`Sender` used as default)
+        :type cp_type:
+            str or unicode
+        :return:
+            dictionary with info about counterparty's addresses
+        """
         req = self.send(method='getCounterpartyAddresses',
                         method_props={'Ref': cp_ref, 'CounterpartyProperty': cp_type})
         return req
 
-    def ex_get_counterparty_contact_persons(self, name, cp_type):
+    def ex_get_counterparty_contact_persons(self, name, cp_type='Sender'):
+        """
+        Method for fetching info about counterparty's contact persons.
+        Extended version of `get_counterparty_contact_persons` method.
+        Counterparty's name is used instead of ID (additionally, counterparty type should be used).
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.ex_get_counterparty_contact_persons(u'Талісман', cp_type='Recipient')``
+        :param name:
+            name of the counterparty
+        :type name:
+            str or unicode
+        :param cp_type:
+            type of the counterparty: can be either `Sender` or `Recipient` (`Sender` used as default)
+        :type cp_type:
+            str or unicode
+        :return:
+            dictionary with info about counterparty's contact persons
+        """
         cp_ref = self.get_counterparty_ref(name=name, cp_type=cp_type)
         req = self.send(method='getCounterpartyContactPersons', method_props={'Ref': cp_ref})
         return req
 
     def get_counterparty_contact_persons(self, cp_ref):
+        """
+        Method for fetching info about counterparty's contact persons.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.get_counterparty_contact_persons(u'f70f1bee-55fd-11e5-8d8d-005056887b8d')``
+        :param cp_ref:
+            name of the counterparty
+        :type cp_ref:
+            str or unicode
+        :return:
+            dictionary with info about counterparty's contact persons
+        """
         req = self.send(method='getCounterpartyContactPersons', method_props={'Ref': cp_ref})
+        return req
+
+    def save_counterparty(self, city_ref=None, first_name=None, mid_name=None, last_name=None, phone=None, email=None,
+                          cp_type=None, cp_prop=None):
+        """
+        Method for saving counterparty.
+        It covers `save` method from API, so all method properties are used.
+        This method is difficult to use because of a lot of params.
+        In this case it is easier to make dictionary with data and use `save` method.
+
+        :example:
+            ``counterparty =Counterparty()``
+            ``counterparty.save_counterparty(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',``
+                               ``mid_name=u'Едуардович', last_name=u'Ковальчук', phone=i'0937979489',
+                               ``email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')``
+
+        :param city_ref:
+            ID of the counterparty's city
+        :type city_ref:
+            str or unicode
+        :param first_name:
+            first name of the counterparty
+        :type:
+            str or unicode
+        :param mid_name:
+            middle name of the counterparty
+        :type:
+            str or unicode
+        :param last_name:
+            last name of the counterparty
+        :type:
+            str or unicode
+        :param phone:
+            phone number of the counterparty
+        :type:
+            str or unicode
+        :param email:
+            e-mail address of the counterparty
+        :type:
+            str or unicode
+        :param cp_type:
+            type of the counterparty (`PrivatePerson` etc.)
+        :type:
+            str or unicode
+        :param cp_prop:
+            counterparty property (can be either `Sender` or `Recipient`)
+        :type:
+            str or unicode
+        :return:
+            dictionary with info about saved counterparty
+        :rtype:
+            dict
+        """
+        props = {}
+        if city_ref:
+            props['CityRef'] = city_ref
+        if first_name:
+            props['FirstName'] = first_name
+        if mid_name:
+            props['MiddleName'] = mid_name
+        if last_name:
+            props['LastName'] = last_name
+        if phone:
+            props['Phone'] = phone
+        if email:
+            props['Email'] = email
+        if cp_type:
+            props['CounterpartyType'] = cp_type
+        if cp_prop:
+            props['CounterpartyProperty'] = cp_prop
+        req = self.send(method='save', method_props=props)
         return req
 
 
 class Common(NovaPoshtaApi):
+    """A class representing the `Common` model of Nova Poshta API.
+    Used for parsing common (obviously) information, which represents different data (cargo, payment etc.).
+    """
+
+    def get_types_of_payers(self):
+        """
+        Method for fetching info about types of payers.
+
+        :example:
+            ``common = Common()``
+            ``common.get_types_of_payers()``
+        :return:
+            dictionary with info about types of payers
+        """
+        req = self.send(method='getTypesOfPayers')
+        return req
+
     def get_payment_forms(self):
+        """
+        Method for fetching info about possible payment forms.
+
+        :example:
+            ``common = Common()``
+            ``common.get_payment_forms()``
+        :return:
+            dictionary with info about payment forms
+        :rtype:
+            dict
+        """
         req = self.send(method='getPaymentForms')
         return req
 
     def get_cargo_types(self):
+        """
+        Method for fetching info about cargo types.
+
+        :example:
+            ``common = Common()``
+            ``common.get_cargo_types()``
+        :return:
+            dictionary with info about cargo types
+        :rtype:
+            dict
+        """
         req = self.send(method='getCargoTypes')
         return req
 
     def get_service_types(self):
+        """
+        Method for fetching info about possible delivery methods.
+
+        :example:
+            ``common = Common()``
+            ``common.get_service_types()``
+        :return:
+            dictionary with info about possible delivery methods
+        :rtype:
+            dict
+        """
         req = self.send(method='getServiceTypes')
         return req
 
     def get_cargo_description_list(self):
+        """
+        Method for fetching the directory of cargo description.
+
+        :example:
+            ``common = Common()``
+            ``common.get_cargo_description_list()``
+        :return:
+            dictionary with cargo descriptions
+        :rtype:
+            dict
+        """
         req = self.send(method='getCargoDescriptionList')
         return req
 
     def search_cargo_description_list(self, keyword):
+        """
+        Method for fetching cargo description by keyword.
+        In general, it is extended version of `get_cargo_description_list` with `FindByString` API's methods param.
+        :example:
+            ``common = Common()``
+            ``common.search_cargo_description_list(u'Абажур')``
+        :param keyword:
+            keyword for searching
+        :type keyword:
+            str or unicode
+        :return:
+            dictionary with cargo descriptions
+        :rtype:
+            dict
+        """
         req = self.send(method='getCargoDescriptionList', method_props={'FindByString': keyword})
         return req
 
     def get_ownership_forms_list(self):
+        """
+        Method for fetching info about ownership forms.
+
+        :example:
+            ``common = Common()``
+            ``common.get_ownership_forms_list()``
+        :return:
+            dictionary with info about ownership forms
+        :rtype:
+            dict
+        """
         req = self.send(method='getOwnershipFormsList')
         return req
 
     def get_backward_delivery_cargo_types(self):
+        """
+        Method for fetching info about backward delivery cargo types.
+
+        :example:
+            ``common = Common()``
+            ``common.get_backward_delivery_cargo_types()``
+        :return:
+            Dictionary with info about backward delivery cargo types.
+        :rtype:
+            dict
+        """
         req = self.send('getBackwardDeliveryCargoTypes')
         return req
 
     def get_pallets_list(self):
+        """
+        Method for fetching info about pallets for backward delivery.
+
+        :example:
+            ``common = Common()``
+            ``common.get_pallets_list()``
+        :return:
+            dictionary with info about pallets
+        :rtype:
+            dict
+        """
         req = self.send(method='getPalletsList')
         return req
 
     def get_type_of_counterparties(self):
+        """
+        Method for fetching info about types of counterparties.
+
+        :example:
+            ``common = Common()``
+            ``common.get_type_of_counterparties()``
+        :return:
+            dictionary with info about types of counterparties
+        :rtype:
+            dict
+        """
         req = self.send(method='getTypesOfCounterparties')
         return req
 
     def get_type_of_payers_for_redelivery(self):
+        """
+        Method for fetching info about types of payers for redelivery.
+
+        :example:
+            ``common = Common()``
+            ``common.get_type_of_payers_for_redelivery()``
+        :return:
+            dictionary with info about types of payers for redelivery
+        :rtype:
+            dict
+        """
         req = self.send(method='getTypesOfPayersForRedelivery')
         return req
 
     def ex_get_time_intervals(self, city, datetime):
+        """
+        Method for fetching info about time intervals (for ordering "time intervals" service).
+        Extended version of `get_time_intervals`.
+        City name is used instead of ID.
+
+        :example:
+        ``common = Common()``
+        ``common.ex_get_time_intervals(city=u'Рівне', datetime=u'2.10.2015')``
+        :param city:
+            name of the recipient's city
+        :param datetime:
+            date for getting info about time intervals ('dd.mm.yyyy' date format)
+        :return:
+            dictionary with info about time intervals
+        :rtype:
+            dict
+        """
         city_ref = Address().get_city_by_name(city)['data'][0]['Ref']
         req = self.send(method='getTimeIntervals', method_props={'RecipientCityRef': city_ref, 'DateTime': datetime})
         return req
 
     def get_time_intervals(self, city_ref, datetime):
+        """
+        Method for fetching info about time intervals (for ordering "time intervals" service).
+
+        :example:
+        ``common = Common()``
+        ``common.get_time_intervals(city_ref=u'udb5c896a-391c-11dd-90d9-001a92567626', datetime=u'2.10.2015')``
+        :param city_ref:
+            ID of the recipient's city
+        :param datetime:
+            date for getting info about time intervals ('dd.mm.yyyy' date format)
+        :return:
+            dictionary with info about time intervals
+        :rtype:
+            dict
+        """
         req = self.send(method='getTimeIntervals', method_props={'RecipientCityRef': city_ref, 'DateTime': datetime})
         return req
 
     def get_tires_wheels_list(self):
+        """
+        Method for fetching info about tires and wheels (if cargo is "tires-wheels").
+
+        :example:
+            ``common = Common()``
+            ``common.get_tires_wheels_list()``
+        :return:
+            dictionary with info about tires and wheels
+        :rtype:
+            dict
+        """
         req = self.send(method='getTiresWheelsList')
         return req
 
     def get_trays_list(self):
+        """
+        Method for fetching info about trays (if backward delivery is ordered).
+
+        :example:
+            ``common = Common()``
+            ``common.get_trays_list()``
+        :return:
+            dictionary with info about trays
+        :rtype:
+            dict
+        """
         req = self.send(method='getTraysList')
         return req
 
     def get_document_statuses(self):
+        """
+        Method for fetching info about statuses of documents.
+
+        :example:
+            ``common = Common()``
+            ``common.get_document_statuses()``
+        :return:
+            dictionary with info about statuses of documents
+        :rtype:
+            dict
+        """
         req = self.send(method='getDocumentStatuses')
         return req
 
-    def get_document_state(self, state_id):
-        req = self.send(method='getDocumentStatuses', method_props={'StateId': state_id})
+    def get_document_status(self, state_id=None, group_id=None, state_name=None):
+        """
+        Method for fetching info about status of one document.
+        Can be filtered by several params (one or many).
+        Since there is no default values, at least one filter should be used.
+
+        :example:
+            ``common = Common()``
+            ``common.get_document_status(state_id=u'1')
+            ``common.get_document_status(group_id=u'1')``
+            ``common.get_document_status(group_id=u'1')
+            ``common.get_document_status(state_name=u'Замовлення в обробці')
+            ``common.get_document_status(group_id=u'1', state_name=u'Замовлення в обробці')
+
+        :param state_id:
+            numeric ID of document status
+        :type state_id:
+            str or unicode
+        :param group_id:
+            numeric group ID of document status
+        :type state_name:
+            str or unicode
+        :param state_name:
+            name of the status
+        :type:
+            str or unicode
+        :return:
+            dict with info about status of one document
+        """
+        filter_by = {}
+        if state_id:
+            filter_by['StateId'] = state_id
+        if group_id:
+            filter_by['GroupId'] = group_id
+        if state_name:
+            filter_by['StateName'] = state_name
+
+        req = self.send(method='getDocumentStatuses', method_props=filter_by)
         return req
