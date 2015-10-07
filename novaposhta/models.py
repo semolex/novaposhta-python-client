@@ -483,18 +483,37 @@ class Counterparty(NovaPoshtaApi):
         req = self.send(method='getCounterpartyContactPersons', method_props={'Ref': cp_ref})
         return req
 
-    def save(self, from_data=None, city_ref=None, first_name=None, mid_name=None, last_name=None, phone=None, email=None,
-             cp_type=None, cp_prop=None):
+    def save(self,                                                                               # TODO: Default values!
+             from_data=None,
+             city_ref=None,
+             first_name=None,
+             mid_name=None,
+             last_name=None,
+             phone=None, email=None,
+             cp_type=None,
+             cp_prop=None):
         """
         Method for saving counterparty.
-        It covers `save` method from API, so all method properties are used.
-        This method is difficult to use because of a lot of params. It is here for `API exactly coverage`.
+        Named arguments can be used or it is possible to save pre-parsed dictionary with counterparty info.
 
         :example:
-            ``counterparty =Counterparty()``
-            ``counterparty.save_counterparty(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',``
-                               ``mid_name=u'Едуардович', last_name=u'Ковальчук', phone=i'0937979489',
-                               ``email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')``
+            >>> counterparty = Counterparty()
+            >>> counterparty.save(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',
+            ... mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',
+            ... email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')
+            or:
+            >>> counterparty = Counterparty()
+            >>> data = {
+            ... 'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',
+            ... 'CounterpartyProperty' : 'Recipient',
+            ... 'CounterpartyType' : 'PrivatePerson',
+            ... 'Email' : '',
+            ... 'FirstName' : 'Андрій',
+            ... 'LastName' : 'Яковлєв',
+            ... 'MiddleName' : 'Адуардович',
+            ... 'Phone' : '0997979789' }
+            >>> counterparty.save(from_data=data)
+
 
         :param city_ref:
             ID of the counterparty's city
@@ -556,88 +575,117 @@ class Counterparty(NovaPoshtaApi):
         req = self.send(method='save', method_props=props)
         return req
 
+    # TODO: API requires all fields to be passed. Maybe we can pre-fetch data from API and use if no need to update it
+    def update(self,
+               from_data=None,
+               cp_ref=None,
+               city_ref=None,
+               first_name=None,
+               mid_name=None,
+               last_name=None,
+               phone=None,
+               email=None,
+               cp_type=None,
+               cp_prop=None,
+               own_form=None):
+        """
+        Method for updating counterparty. All fields are required
+        Named arguments can be used or it is possible to update pre-parsed dictionary with counterparty info.
+
+        :example:
+            >>> counterparty = Counterparty()
+            >>> counterparty.update(ref='db5c88d7-391c-11dd-90d9-001a92567626',
+            ... city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',
+            ... mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',
+            ... email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient', own_form='')
+            or:
+            >>> counterparty = Counterparty()
+            >>> data = {
+            ... 'Ref': 'db5c88d7-391c-11dd-90d9-001a92567626',
+            ... 'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',
+            ... 'CounterpartyProperty' : 'Recipient',
+            ... 'CounterpartyType' : 'PrivatePerson',
+            ... 'Email' : '',
+            ... 'FirstName' : 'Андрій',
+            ... 'LastName' : 'Яковлєв',
+            ... 'MiddleName' : 'Едуардович',
+            ... 'Phone' : '0997979789',
+            ... 'OwnershipForm': '' }
+            >>> counterparty.update(from_data=data)
 
 
-    # # not tested yet, because of contract lack!
-    # def save_third_person(self, city_ref=None, first_name=None, mid_name=None, last_name=None, phone=None, email=None,
-    #                       cp_type=None, edrpou=None, own_form=None):
-    #     """
-    #     Method for saving third-party person.
-    #     It covers `save` method from API, so all method properties are used.
-    #     Just like `save_counterparty`, this method is difficult to use because of a lot of params.
-    #     It is here for `API exactly coverage`
-    #
-    #     :example:
-    #         ``counterparty =Counterparty()``
-    #         ``counterparty.save_third_person(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',``
-    #                            ``mid_name=u'Едуардович', last_name=u'Ковальчук', phone=i'0937979489',
-    #                            ``email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')``
-    #
-    #     :param city_ref:
-    #         ID of the counterparty's city
-    #     :type city_ref:
-    #         str or unicode
-    #     :param first_name:
-    #         first name of the counterparty
-    #     :type:
-    #         str or unicode
-    #     :param mid_name:
-    #         middle name of the counterparty
-    #     :type:
-    #         str or unicode
-    #     :param last_name:
-    #         last name of the counterparty
-    #     :type:
-    #         str or unicode
-    #     :param phone:
-    #         phone number of the counterparty
-    #     :type:
-    #         str or unicode
-    #     :param email:
-    #         e-mail address of the counterparty
-    #     :type:
-    #         str or unicode
-    #     :param cp_type:
-    #         type of the counterparty (`PrivatePerson` etc.)
-    #     :type:
-    #         str or unicode
-    #     :type:
-    #         str or unicode
-    #     :return:
-    #         dictionary with info about saved counterparty
-    #     :rtype:
-    #         dict
-    #     """
-    #     props = {'CounterpartyProperty': 'ThirdPerson'
-    #                                      ''}
-    #     if city_ref:
-    #         props['CityRef'] = city_ref
-    #     if first_name:
-    #         props['FirstName'] = first_name
-    #     if mid_name:
-    #         props['MiddleName'] = mid_name
-    #     if last_name:
-    #         props['LastName'] = last_name
-    #     if phone:
-    #         props['Phone'] = phone
-    #     if email:
-    #         props['Email'] = email
-    #     if cp_type:
-    #         props['CounterpartyType'] = cp_type
-    #     if edrpou:
-    #         props['EDRPOU'] = edrpou
-    #     if own_form:
-    #         props['OwnershipForm'] = own_form
-    #
-    #     req = self.send(method='saveThirdPerson', method_props=props)
-    #     print props
-    #     return req
+        :param city_ref:
+            ID of the counterparty's city
+        :type city_ref:
+            str or unicode
+        :param first_name:
+            first name of the counterparty
+        :type:
+            str or unicode
+        :param mid_name:
+            middle name of the counterparty
+        :type:
+            str or unicode
+        :param last_name:
+            last name of the counterparty
+        :type:
+            str or unicode
+        :param phone:
+            phone number of the counterparty
+        :type:
+            str or unicode
+        :param email:
+            e-mail address of the counterparty
+        :type:
+            str or unicode
+        :param cp_type:
+            type of the counterparty (`PrivatePerson` etc.)
+        :type:
+            str or unicode
+        :param cp_prop:
+            counterparty property (can be either `Sender` or `Recipient`)
+        :type:
+            str or unicode
+        :param own_form:
+            ownership form of the counterparty.
+            if needed, `get_ownership_forms_list`method from Common class can be used to get possible values
+        :type own_form:
+            str or unicode
+        :return:
+            dictionary with info about saved counterparty
+        :rtype:
+            dict
+        """
+        props = {}
+        if from_data:
+            props = from_data
+        else:
+            if cp_ref:
+                props['Ref'] = cp_ref
+            if city_ref:
+                props['CityRef'] = city_ref
+            if first_name:
+                props['FirstName'] = first_name
+            if mid_name:
+                props['MiddleName'] = mid_name
+            if last_name:
+                props['LastName'] = last_name
+            if phone:
+                props['Phone'] = phone
+            if email:
+                props['Email'] = email
+            if cp_type:
+                props['CounterpartyType'] = cp_type
+            if cp_prop:
+                props['CounterpartyProperty'] = cp_prop
+            if own_form:
+                props['OwnershipForm'] = own_form
+        req = self.send(method='update', method_props=props)
+        return req
 
-
-
-
-
-
+    def save_third_person(self):
+        """Not implemented due to contract lack, will be here in the future. Maybe :)"""
+        return False
 
 
 class Common(NovaPoshtaApi):
