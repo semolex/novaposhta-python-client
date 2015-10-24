@@ -497,22 +497,22 @@ class Counterparty(NovaPoshtaApi):
         Named arguments can be used or it is possible to save pre-parsed dictionary with counterparty info.
 
         :example:
-            >>> counterparty = Counterparty()
-            >>> counterparty.save(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',
-            ... mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',
-            ... email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')
+            ``counterparty = Counterparty()``
+            ``counterparty.save(city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',``
+            ``mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',``
+            ``email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient')``
             or:
-            >>> counterparty = Counterparty()
-            >>> data = {
-            ... 'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',
-            ... 'CounterpartyProperty' : 'Recipient',
-            ... 'CounterpartyType' : 'PrivatePerson',
-            ... 'Email' : '',
-            ... 'FirstName' : 'Андрій',
-            ... 'LastName' : 'Яковлєв',
-            ... 'MiddleName' : 'Адуардович',
-            ... 'Phone' : '0997979789' }
-            >>> counterparty.save(from_data=data)
+            ``counterparty = Counterparty()``
+            ``data = {``
+            ``       'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',``
+            ``       'CounterpartyProperty' : 'Recipient',``
+            ``       'CounterpartyType' : 'PrivatePerson',``
+            ``       'Email' : '',``
+            ``       'FirstName' : 'Андрій',``
+            ``       'LastName' : 'Яковлєв',``
+            ``       'MiddleName' : 'Адуардович',``
+            ``       'Phone' : '0997979789' }``
+            ``counterparty.save(from_data=data)``
 
 
         :param city_ref:
@@ -593,25 +593,24 @@ class Counterparty(NovaPoshtaApi):
         Named arguments can be used or it is possible to update pre-parsed dictionary with counterparty info.
 
         :example:
-            >>> counterparty = Counterparty()
-            >>> counterparty.update(ref='db5c88d7-391c-11dd-90d9-001a92567626',
-            ... city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',
-            ... mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',
-            ... email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient', own_form='')
+            ``counterparty = Counterparty()``
+            ``counterparty.update(ref='db5c88d7-391c-11dd-90d9-001a92567626',``
+            ``city_ref='db5c88d7-391c-11dd-90d9-001a92567626', first_name=u'Фелікс',``
+            ``mid_name=u'Едуардович', last_name=u'Ковальчук', phone='0937979489',``
+            ``email='myemail@my.com', cp_type='PrivatePerson', cp_prop='Recipient', own_form='')``
             or:
-            >>> counterparty = Counterparty()
-            >>> data = {
-            ... 'Ref': 'db5c88d7-391c-11dd-90d9-001a92567626',
-            ... 'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',
-            ... 'CounterpartyProperty' : 'Recipient',
-            ... 'CounterpartyType' : 'PrivatePerson',
-            ... 'Email' : '',
-            ... 'FirstName' : 'Андрій',
-            ... 'LastName' : 'Яковлєв',
-            ... 'MiddleName' : 'Едуардович',
-            ... 'Phone' : '0997979789',
-            ... 'OwnershipForm': '' }
-            >>> counterparty.update(from_data=data)
+            ``counterparty = Counterparty()``
+            ``data = {'Ref': 'db5c88d7-391c-11dd-90d9-001a92567626',``
+            ``       'CityRef' : 'db5c88d7-391c-11dd-90d9-001a92567626',``
+            ``       'CounterpartyProperty' : 'Recipient',``
+            ``       'CounterpartyType' : 'PrivatePerson',``
+            ``       'Email' : '',``
+            ``       'FirstName' : 'Андрій',``
+            ``       'LastName' : 'Яковлєв',``
+            ``       'MiddleName' : 'Едуардович',``
+            ``       'Phone' : '0997979789',``
+            ``       'OwnershipForm': '' }``
+            ``counterparty.update(from_data=data)``
 
 
         :param city_ref:
@@ -683,9 +682,44 @@ class Counterparty(NovaPoshtaApi):
         req = self.send(method='update', method_props=props)
         return req
 
-    def save_third_person(self):
-        """Not implemented due to contract lack, will be here in the future. Maybe :)"""
-        return False
+    def delete(self, cp_ref):
+        """
+        Method for deleting counterparties.
+        Due to restrictions, only `Recipient` counterparty type can be deleted.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.delete('342e8add-6953-11e5-ad08-005056801333')``
+        :param cp_ref:
+            ID of the counterparty
+        :type cp_ref:
+            str or unicode
+        :return:
+            dictionary with ID of deleted counterparty
+        """
+        req = self.send(method='delete', method_props={'Ref': cp_ref})
+        return req
+
+    # def save_third_person(self):
+    #     """Not implemented due to contract lack, will be here in the future. Maybe :)"""
+    #     return False
+
+    def get_counterparty_options(self, cp_ref):
+        """
+        Method for getting counterparties options.
+
+        :example:
+            ``counterparty = Counterparty()``
+            ``counterparty.get_counterparty_options('342e8add-6953-11e5-ad08-005056801333')``
+        :param cp_ref:
+            ID of the counterparty
+        :type:
+            str or unicode
+        :return:
+            dictionary with counterparty's options
+        """
+        req = self.send(method='getCounterpartyOptions', method_props={'Ref': cp_ref})
+        return req
 
 
 class Common(NovaPoshtaApi):
