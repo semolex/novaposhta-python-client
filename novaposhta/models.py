@@ -5,6 +5,9 @@ import json
 API_SETTINGS = {'api_key': '', 'api_point': ''}
 
 
+# dict((k, v) for k, v in metadata.iteritems() if v)
+
+
 class NovaPoshtaApi(object):
     """A base API class, that holds shared methods and settings for other models.
     Creates basic query object and provide `apiKey` and API endpoint configuration.
@@ -23,6 +26,10 @@ class NovaPoshtaApi(object):
             self.api_point = API_SETTINGS['api_point']
         else:
             self.api_point = 'https://api.novaposhta.ua/v2.0/json/'
+
+    @staticmethod
+    def _clean_properties(method_properties):
+        return dict((k, v) for k, v in method_properties.iteritems() if v)
 
     def send(self, method=None, method_props=None):
         """
@@ -270,6 +277,20 @@ class Address(NovaPoshtaApi):
         req = self.send(method='getAreas')
         return req
 
+    def save(self, from_data=None, cp_ref=None, str_ref=None, build_num=None, flat=None, note=None):
+        if from_data:
+            props = from_data
+        else:
+            props = {
+                'CounterpartyRef': cp_ref,
+                'StreetRef': str_ref,
+                'BuildingNumber': build_num,
+                'Flat': flat,
+                'Note': note
+            }
+        req = self.send(method='save', method_props=props)
+        return req
+
 
 class Counterparty(NovaPoshtaApi):
     """
@@ -483,7 +504,7 @@ class Counterparty(NovaPoshtaApi):
         req = self.send(method='getCounterpartyContactPersons', method_props={'Ref': cp_ref})
         return req
 
-    def save(self,                                                                               # TODO: Default values!
+    def save(self,  # TODO: Default values!
              from_data=None,
              city_ref=None,
              first_name=None,
@@ -552,26 +573,19 @@ class Counterparty(NovaPoshtaApi):
         :rtype:
             dict
         """
-        props = {}
         if from_data:
             props = from_data
         else:
-            if city_ref:
-                props['CityRef'] = city_ref
-            if first_name:
-                props['FirstName'] = first_name
-            if mid_name:
-                props['MiddleName'] = mid_name
-            if last_name:
-                props['LastName'] = last_name
-            if phone:
-                props['Phone'] = phone
-            if email:
-                props['Email'] = email
-            if cp_type:
-                props['CounterpartyType'] = cp_type
-            if cp_prop:
-                props['CounterpartyProperty'] = cp_prop
+            props = {
+                'CityRef': city_ref,
+                'FirstName': first_name,
+                'MiddleName': mid_name,
+                'LastName': last_name,
+                'Phone': phone,
+                'Email': email,
+                'CounterpartyType': cp_type,
+                'CounterpartyProperty': cp_prop
+            }
         req = self.send(method='save', method_props=props)
         return req
 
@@ -655,30 +669,21 @@ class Counterparty(NovaPoshtaApi):
         :rtype:
             dict
         """
-        props = {}
         if from_data:
             props = from_data
         else:
-            if cp_ref:
-                props['Ref'] = cp_ref
-            if city_ref:
-                props['CityRef'] = city_ref
-            if first_name:
-                props['FirstName'] = first_name
-            if mid_name:
-                props['MiddleName'] = mid_name
-            if last_name:
-                props['LastName'] = last_name
-            if phone:
-                props['Phone'] = phone
-            if email:
-                props['Email'] = email
-            if cp_type:
-                props['CounterpartyType'] = cp_type
-            if cp_prop:
-                props['CounterpartyProperty'] = cp_prop
-            if own_form:
-                props['OwnershipForm'] = own_form
+            props = {
+                'Ref': cp_ref,
+                'CityRef': city_ref,
+                'FirstName': first_name,
+                'MiddleName': mid_name,
+                'LastName': last_name,
+                'Phone': phone,
+                'Email': email,
+                'CounterpartyType': cp_type,
+                'CounterpartyProperty': cp_prop,
+                'OwnershipForm': own_form
+            }
         req = self.send(method='update', method_props=props)
         return req
 
@@ -1009,13 +1014,10 @@ class Common(NovaPoshtaApi):
         :return:
             dict with info about status of one document
         """
-        filter_by = {}
-        if state_id:
-            filter_by['StateId'] = state_id
-        if group_id:
-            filter_by['GroupId'] = group_id
-        if state_name:
-            filter_by['StateName'] = state_name
-
+        filter_by = {
+            'StateId': state_id,
+            'GroupId': group_id,
+            'StateName': state_name
+        }
         req = self.send(method='getDocumentStatuses', method_props=filter_by)
         return req
