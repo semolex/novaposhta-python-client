@@ -52,7 +52,7 @@ class NovaPoshtaApi(object):
         """
         self.query['calledMethod'] = method
         if method_props:
-            self.query['methodProperties'] = method_props
+            self.query['methodProperties'] = self._clean_properties(method_props)
         req = Request(self.api_point, json.dumps(self.query))
         response = json.load(urlopen(req))
         return response
@@ -278,6 +278,51 @@ class Address(NovaPoshtaApi):
         return req
 
     def save(self, from_data=None, cp_ref=None, str_ref=None, build_num=None, flat=None, note=None):
+        """
+        Method for saving counterparty's address
+
+        :example:
+            ``address = Address()``
+            ``address.save(cp_ref='5953fb16-08d8-11e4-8958-0025909b4e33',``
+            ``str_ref='d8364179-4149-11dd-9198-001d60451983', build_num=u'20',``
+            ``flat=u'10')``
+            or:
+            ``address = Address()``
+            ``data = {
+            ``        cp_ref='5953fb16-08d8-11e4-8958-0025909b4e33',``
+            ``        str_ref='d8364179-4149-11dd-9198-001d60451983',
+            ``        build_num=u'20',``
+            ``        flat=u'10'}``
+            ``address.save(from_data=data)``
+        :param from_data:
+            dictionary with all required data, will be used instead of passing each keyword separately
+        :type from_data:
+            dict
+        :param cp_ref:
+            ID of the counterparty
+        :type cp_ref:
+            str or unicode
+        :param str_ref:
+            ID of the street
+        :type str_ref:
+            str or unicode
+        :param build_num:
+            building number
+        :type build_num:
+            str or unicode
+        :param flat:
+            flat number
+        :type flat:
+            str or unicode
+        :param note:
+            comment
+        :type:
+            str or unicode
+        :return:
+            dictionary with info about saved address
+        :rtype:
+             dict
+        """
         if from_data:
             props = from_data
         else:
@@ -289,6 +334,74 @@ class Address(NovaPoshtaApi):
                 'Note': note
             }
         req = self.send(method='save', method_props=props)
+        return req
+
+    def update(self, from_data=None, cp_ref=None, add_ref=None, str_ref=None, build_num=None, flat=None, note=None):
+        """
+        Method for updating counterparty's address
+
+        :param from_data:
+            dictionary with all required data, will be used instead of passing each keyword separately
+        :type from_data:
+            dict
+        :param cp_ref:
+            ID of the counterparty
+        :type cp_ref:
+            str or unicode
+        :param add_ref:
+            ID of the address, that need to be updated
+        :type add_ref:
+            str or unicode
+        :param str_ref:
+            ID of the street
+        :type str_ref:
+            str or unicode
+        :param build_num:
+            building number
+        :type build_num:
+            str or unicode
+        :param flat:
+            flat number
+        :type flat:
+            str or unicode
+        :param note:
+            comment
+        :type:
+            str or unicode
+        :return:
+            dictionary with info about saved address
+        :rtype:
+             dict
+        """
+        if from_data:
+            props = from_data
+        else:
+            props = {
+                'CounterpartyRef': cp_ref,
+                'Ref': add_ref,
+                'StreetRef': str_ref,
+                'BuildingNumber': build_num,
+                'Flat': flat,
+                'Note': note
+            }
+        req = self.send(method='update', method_props=props)
+        return req
+
+    def delete(self, add_ref):
+        """
+        Method for deleting saved address
+        :param add_ref:
+            ID of the address, that need to be deleted
+        :type add_ref:
+            str or unicode
+        :return:
+            dict with info about deleted address
+
+        """
+        props = {
+            'Ref': add_ref
+        }
+        req = self.send(method='delete', method_props=props)
         return req
 
 
@@ -535,7 +648,8 @@ class Counterparty(NovaPoshtaApi):
             ``       'Phone' : '0997979789' }``
             ``counterparty.save(from_data=data)``
 
-
+        :param from_data:
+            dictionary with all required data, will be used instead of passing each keyword separately
         :param city_ref:
             ID of the counterparty's city
         :type city_ref:
@@ -626,7 +740,10 @@ class Counterparty(NovaPoshtaApi):
             ``       'OwnershipForm': '' }``
             ``counterparty.update(from_data=data)``
 
-
+        :param from_data:
+            dictionary with all required data, will be used instead of passing each keyword separately
+        :type from_data:
+            dict
         :param city_ref:
             ID of the counterparty's city
         :type city_ref:
@@ -1021,3 +1138,7 @@ class Common(NovaPoshtaApi):
         }
         req = self.send(method='getDocumentStatuses', method_props=filter_by)
         return req
+
+
+class ContactPerson(NovaPoshtaApi):
+    pass
