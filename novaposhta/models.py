@@ -5,9 +5,6 @@ import json
 API_SETTINGS = {'api_key': '', 'api_point': ''}
 
 
-# dict((k, v) for k, v in metadata.iteritems() if v)
-
-
 class NovaPoshtaApi(object):
     """A base API class, that holds shared methods and settings for other models.
     Creates basic query object and provide `apiKey` and API endpoint configuration.
@@ -18,10 +15,11 @@ class NovaPoshtaApi(object):
         Creates basic configuration dictionary, used as API query template by models.
         Settings can be set through `API_SETTINGS` variable.
         """
-        self.query = {} or dict()
-        self.query['modelName'] = self.__class__.__name__
-        self.query['methodProperties'] = {}
-        self.query['apiKey'] = API_SETTINGS['api_key']
+        self.query = {
+            'modelName': self.__class__.__name__,
+            'methodProperties': {},
+            'apiKey': API_SETTINGS['api_key']
+        }
         if API_SETTINGS['api_point']:
             self.api_point = API_SETTINGS['api_point']
         else:
