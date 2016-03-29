@@ -1139,4 +1139,21 @@ class Common(NovaPoshtaApi):
 
 
 class ContactPerson(NovaPoshtaApi):
-    pass
+    """A class representing the `ContactPerson` model of Nova Poshta API.
+    Used for manipulating contact person data.
+    :NOTE: All counterpart details must be only in Ukrainian.
+    """
+
+    def save(self, cp_ref=None, from_data=None, first_name=None, mid_name=None, last_name=None, phone=None):
+        if from_data:
+            props = from_data
+        else:
+            props = {
+                'CounterpartyRef': cp_ref,
+                'FirstName': first_name,
+                'LastName': last_name,
+                'MiddleName': mid_name,
+                'Phone': phone,
+            }
+        req = self.send(method='save', method_props=props)
+        return req
