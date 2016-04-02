@@ -966,7 +966,7 @@ class Common(NovaPoshtaApi):
         :rtype:
             dict
         """
-        req = self.send('getBackwardDeliveryCargoTypes')
+        req = self.send(method='getBackwardDeliveryCargoTypes')
         return req
 
     def get_pallets_list(self):
@@ -1157,3 +1157,29 @@ class ContactPerson(NovaPoshtaApi):
             }
         req = self.send(method='save', method_props=props)
         return req
+
+    def update(self, cp_ref=None, ref=None, from_data=None, first_name=None, mid_name=None, last_name=None, phone=None):
+        if from_data:
+            props = from_data
+        else:
+            props = {
+                'CounterpartyRef': cp_ref,
+                'Ref': ref,
+                'FirstName': first_name,
+                'LastName': last_name,
+                'MiddleName': mid_name,
+                'Phone': phone,
+            }
+        req = self.send(method='update', method_props=props)
+        return req
+
+    def delete(self, cp_ref=None):
+        props = {
+            'Ref': cp_ref
+        }
+        req = self.send(method='delete', method_props=props)
+        return req
+
+
+class InternetDocument(NovaPoshtaApi):
+    pass
