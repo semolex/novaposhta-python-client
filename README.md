@@ -2,22 +2,29 @@
 Python client for Nova Poshta company's API.
 ## Installation
 Client is based on `python 3.6`.
-You can install package by using pip: 
+
+You can install package by using pip:
+ 
 `pip install git+https://github.com/semolex/novaposhta-api-client`
 
 ## Description
 Client is based on models and signatures, provided in [NovaPoshta API documentation](https://devcenter.novaposhta.ua/docs/services/).
+
 Main idea of the client is to provide same methods as described there with minimal
 changes when it possible.
+
 Methods and they parameters in most cases shares same names as in API docs, but 
 in python-like style.
+
 However, some models are omitted due to their singleton nature, for example,
 `AddressGeneral` model is part of the `AddressModel`, because it has only one 
 method and semantically it is definitely part of the address-related items, etc.
 You can explore source code to find this parts.
 
 Also, while there methods are designed to wrap same methods from API, there is 
-may be some different and additions. For example, some methods may be divided into 
+may be some different and additions. 
+
+For example, some methods may be divided into 
 smaller logical parts, because they uses _a lot_ of parameters, also there is 
 additional classes (`WarehouseFilter` and `ExpressWaybill`), used to divide 
 some properties as separate class that can be passed to the method that will 
