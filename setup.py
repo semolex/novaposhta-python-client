@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='novaposhta-api-client',
     version='0.0.9',
-    packages=['novaposhta', 'novaposhta.api'],
+    packages=['novaposhta'],
     url='https://github.com/semolex/novaposhta-api-client',
     install_requires=[
         'requests',
