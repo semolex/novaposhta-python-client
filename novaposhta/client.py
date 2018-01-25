@@ -56,7 +56,7 @@ class NovaPoshtaApi:
         API docs:
         https://devcenter.novaposhta.ua/docs/services/556d7ccaa0fe4f08e8f7ce43
         """
-        return Address(self, 'Address')
+        return _Address(self, 'Address')
 
     @property
     def counterparty(self):
@@ -66,7 +66,7 @@ class NovaPoshtaApi:
         API docs:
         https://devcenter.novaposhta.ua/docs/services/557eb8c8a0fe4f02fc455b2d
         """
-        return Counterparty(self, 'Counterparty')
+        return _Counterparty(self, 'Counterparty')
 
     @property
     def contact_person(self):
@@ -75,7 +75,7 @@ class NovaPoshtaApi:
         it's methods.
         ContactPerson model is described in different docs chapters.
         """
-        return ContactPerson(self, 'ContactPerson')
+        return _ContactPerson(self, 'ContactPerson')
 
     @property
     def scan_sheet(self):
@@ -85,7 +85,7 @@ class NovaPoshtaApi:
         API docs:
         https://devcenter.novaposhta.ua/docs/services/55662bd3a0fe4f10086ec96e
         """
-        return ScanSheet(self, 'ScanSheet')
+        return _ScanSheet(self, 'ScanSheet')
 
     @property
     def common(self):
@@ -95,7 +95,7 @@ class NovaPoshtaApi:
         API docs:
         https://devcenter.novaposhta.ua/docs/services/55702570a0fe4f0cf4fc53ed
         """
-        return Common(self, 'Common')
+        return _Common(self, 'Common')
 
     @property
     def additional_service(self):
@@ -104,7 +104,7 @@ class NovaPoshtaApi:
         it's methods.
         AdditionalService is described in different docs chapters.
         """
-        return AdditionalService(self, 'AdditionalService')
+        return _AdditionalService(self, 'AdditionalService')
 
     @property
     def internet_document(self):
@@ -113,7 +113,7 @@ class NovaPoshtaApi:
         it's methods.
         InternetDocument is described in different docs chapters.
         """
-        return InternetDocument(self, 'InternetDocument')
+        return _InternetDocument(self, 'InternetDocument')
 
 
 class Model:
@@ -123,7 +123,7 @@ class Model:
     model name.
     """
     def __init__(self, client, model_name):
-        self.client = client
+        self._client = client
         self.model_name = model_name
 
     def _call(self, api_method, props):
@@ -134,7 +134,7 @@ class Model:
         :param props: payload to send to API.
         :return: Response object.
         """
-        return self.client.send(self.model_name, api_method, props)
+        return self._client.send(self.model_name, api_method, props)
 
 
 class WarehouseFilter:
@@ -152,7 +152,7 @@ class WarehouseFilter:
                                        CityName=city_name, CityRef=city_ref)
 
 
-class ContactPerson(Model):
+class _ContactPerson(Model):
     """
     Implements ContactPerson model.
     """
@@ -178,7 +178,7 @@ class ContactPerson(Model):
         return self._call('delete', props)
 
 
-class Address(Model):
+class _Address(Model):
     """
     Implements Address model.
     """
@@ -227,7 +227,7 @@ class Address(Model):
                                  FindByString=find_by_string,
                                  Warehouse=warehouse, Page=page,
                                  AreaRef=area_ref)
-        return self.client.send('AddressGeneral', 'getSettlements', props)
+        return self._client.send('AddressGeneral', 'getSettlements', props)
 
     def get_warehouses(self, city_name=None, city_ref=None, page=None,
                        limit=None, language=None, filter_by=None):
@@ -252,7 +252,7 @@ class Address(Model):
         return self._call('delete', props)
 
 
-class Counterparty(Model):
+class _Counterparty(Model):
     """
     Implements Counterparty model.
     """
@@ -305,7 +305,7 @@ class Counterparty(Model):
         return self._call('delete', props)
 
 
-class ScanSheet(Model):
+class _ScanSheet(Model):
     """
     Implements ScanSheet model.
     """
@@ -335,7 +335,7 @@ class ScanSheet(Model):
         return self._call('removeDocuments', props)
 
 
-class Common(Model):
+class _Common(Model):
     """
     Implements Common model.
     """
@@ -385,7 +385,7 @@ class Common(Model):
         return self._call('getOwnershipFormsList', {})
 
 
-class AdditionalService(Model):
+class _AdditionalService(Model):
     """
     Implements AdditionalService model.
     """
@@ -446,7 +446,7 @@ class AdditionalService(Model):
 
     def check_possibility_for_redirecting(self, number):
         props = _kwargs_to_props(Number=number)
-        return self.client.send('AdditionalServiceGeneral',
+        return self._client.send('AdditionalServiceGeneral',
                                 'checkPossibilityForRedirecting', props)
 
     def order_redirecting(self, int_doc_number, customer,
@@ -470,12 +470,12 @@ class AdditionalService(Model):
                                  Note=note,
                                  OrderType='orderRedirecting'
                                  )
-        return self.client.send('AdditionalServiceGeneral', 'save',
-                                props)
+        return self._client.send('AdditionalServiceGeneral', 'save',
+                                 props)
 
     def delete_order_redirecting(self, ref):
         props = _kwargs_to_props(Ref=ref, OrderType='orderRedirecting')
-        return self.client.send('AdditionalServiceGeneral',
+        return self._client.send('AdditionalServiceGeneral',
                                 'delete', props)
 
     def get_redirection_orders_list(self, number=None, ref=None,
@@ -483,11 +483,11 @@ class AdditionalService(Model):
                                     end_date=None, page=None, limit=None):
         props = _kwargs_to_props(Number=number, Ref=ref, BeginDate=begin_date,
                                  EndDate=end_date, Page=page, Limit=limit)
-        return self.client.send('AdditionalServiceGeneral',
+        return self._client.send('AdditionalServiceGeneral',
                                 'getRedirectionOrdersList', props)
 
 
-class InternetDocument(Model):
+class _InternetDocument(Model):
     """
     Implements InternetDocument model.
     """
@@ -610,7 +610,7 @@ class InternetDocument(Model):
         if not isinstance(documents, list):
             documents = [documents]
         props = _kwargs_to_props(Documents=documents)
-        return self.client.send('TrackingDocument', 'getStatusDocuments', props)
+        return self._client.send('TrackingDocument', 'getStatusDocuments', props)
 
     def delete(self, document_refs):
         if not isinstance(document_refs, list):
@@ -626,7 +626,7 @@ class InternetDocument(Model):
         return self._call('generateReport', props)
 
     def get_cards(self):
-        return self.client.send('Payment', 'getCards', {})
+        return self._client.send('Payment', 'getCards', {})
 
 
 class ExpressWaybill:
