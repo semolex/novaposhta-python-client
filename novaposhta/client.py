@@ -267,7 +267,7 @@ class _Counterparty(Model):
 
     def get_counterparty_contact_person(self, ref, page=None):
         props = _kwargs_to_props(Ref=ref, Page=page)
-        return self._call('getCounterpartyOptions', props)
+        return self._call('getCounterpartyContactPersons', props)
 
     def get_counterparties(self, counterparty_property=None, page=None,
                            find_by_string=None):
