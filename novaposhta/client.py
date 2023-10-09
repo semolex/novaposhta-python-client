@@ -1,20 +1,23 @@
-"""Python client for Nova Poshta company's API. """
+"""Client for Nova Poshta API. """
 
 import httpx
 
-from novaposhta.models.base import BaseModel
-from novaposhta.models.address import Address
-from novaposhta.models.counterparty import Counterparty
-from novaposhta.models.contact_person import ContactPerson
-from novaposhta.models.scan_sheet import ScanSheet
-from novaposhta.models.common import Common
-from novaposhta.models.additional_service import AdditionalService
-from novaposhta.models.internet_document import InternetDocument
-from novaposhta.models.tracking_document import TrackingDocument
+from .models.base import BaseModel
+from .models.address import Address
+from .models.counterparty import Counterparty
+from .models.contact_person import ContactPerson
+from .models.scan_sheet import ScanSheet
+from .models.common import Common
+from .models.additional_service import AdditionalService
+from .models.internet_document import InternetDocument
+from .models.tracking_document import TrackingDocument
+from .types import DictStrAny
 
-from typing import Type
+from typing import Type, TypeVar
 
 HEADERS = {"Content-Type": "application/json"}
+
+BaseModelType = TypeVar("BaseModelType", bound=BaseModel)
 
 
 class NovaPoshtaApi:
@@ -23,7 +26,7 @@ class NovaPoshtaApi:
     Prepares requests and builds proper resource location.
     All API models can be accessed as instance properties.
     Info about models can be found here:
-    https://devcenter.novaposhta.ua/docs/services/
+    https://developers.novaposhta.ua/documentation
     """
 
     def __init__(
@@ -34,6 +37,8 @@ class NovaPoshtaApi:
         timeout=10,
     ):
         """
+        Initialize Nova Poshta API client.
+
         :param api_key: API key from Nova Poshta.
         :param api_endpoint: API endpoint to use.
         :param http_client: HTTP client to use. Defaults to httpx.
@@ -45,22 +50,36 @@ class NovaPoshtaApi:
         self.timeout = timeout
         self._models_pool = {}
 
-    def send(self, model_name, api_method, method_props):
+    def send(
+        self, model_name: str, api_method: str, method_props: DictStrAny
+    ) -> DictStrAny:
+        """
+        Sends request to the API.
+
+        :param model_name: name of the model to use.
+        :param api_method: name of the method to call.
+        :param method_props: properties to pass to the method.
+        :return: response dict.
+        """
         request = {
             "apiKey": self.api_key,
             "modelName": model_name,
             "calledMethod": api_method,
             "methodProperties": method_props,
         }
-        print(request)
         response = self.http_client.post(
             self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
         )
         return response.json()
 
-    def new(self, model: Type[BaseModel]):
+    def new(self, model: Type[BaseModelType]) -> BaseModelType:
         """
-        Explicitly add/reset new model to the pool.
+        Provide access to the given model of Nova Poshta API.
+
+        This property initializes a new model and provides
+        access to its methods and attributes, facilitating interactions
+        with the Nova Poshta API for model-related operations.
+
         :param model: model to add.
         """
         if model.name in self._models_pool:
@@ -69,73 +88,57 @@ class NovaPoshtaApi:
         return self._models_pool[model.name]
 
     @property
-    def address(self) -> Type[Address]:
+    def address(self) -> Address:
         """
-        Gives access to the Address model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7ccaa0fe4f08e8f7ce43
+        Provide access to the Address model.
         """
         return self.new(Address)
 
     @property
-    def counterparty(self) -> Type[Counterparty]:
+    def counterparty(self) -> Counterparty:
         """
-        Gives access to the Counterparty model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c8ea0fe4f08e8f7ce42
+        Provide access to the Counterparty model.
         """
         return self.new(Counterparty)
 
     @property
-    def contact_person(self) -> Type[ContactPerson]:
+    def contact_person(self) -> ContactPerson:
         """
-        Gives access to the ContactPerson model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the ContactPerson model.
         """
         return self.new(ContactPerson)
 
     @property
-    def scan_sheet(self) -> Type[ScanSheet]:
+    def scan_sheet(self) -> ScanSheet:
         """
-        Gives access to the ScanSheet model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the ScanSheet model.
         """
         return self.new(ScanSheet)
 
     @property
-    def common(self) -> Type[Common]:
+    def common(self) -> Common:
         """
-        Gives access to the Common model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the Common model.
         """
         return self.new(Common)
 
     @property
-    def additional_service(self) -> Type[AdditionalService]:
+    def additional_service(self) -> AdditionalService:
         """
-        Gives access to the AdditionalService model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the AdditionalService model.
         """
         return self.new(AdditionalService)
 
     @property
-    def internet_document(self) -> Type[InternetDocument]:
+    def internet_document(self) -> InternetDocument:
         """
-        Gives access to the InternetDocument model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the InternetDocument model.
         """
         return self.new(InternetDocument)
 
     @property
-    def tracking_document(self) -> Type[TrackingDocument]:
+    def tracking_document(self) -> TrackingDocument:
         """
-        Gives access to the TrackingDocument model of Nova Poshta API and it's methods.
-        API docs:
-        https://devcenter.novaposhta.ua/docs/services/556d7c7da0fe4f08e8f7ce41
+        Provide access to the TrackingDocument model.
         """
         return self.new(TrackingDocument)

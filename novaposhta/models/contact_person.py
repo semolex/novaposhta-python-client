@@ -1,9 +1,13 @@
 """ContactPerson model module."""
 
-from novaposhta.models.base import BaseModel, api_method
+from .base import BaseModel, api_method
 
 
 class ContactPerson(BaseModel):
+    """
+    ContactPerson model class.
+    """
+
     name = "ContactPerson"
 
     def __init__(self, client):
@@ -19,6 +23,17 @@ class ContactPerson(BaseModel):
         email: str,
         counterparty_ref: str,
     ):
+        """
+        Save contact person.
+
+        :param first_name: first name.
+        :param middle_name: middle name.
+        :param last_name: last name.
+        :param phone: phone.
+        :param email: email.
+        :param counterparty_ref: counterparty reference.
+        :return: response dict.
+        """
         return self._call_with_props(
             FirstName=first_name,
             MiddleName=middle_name,
@@ -39,6 +54,18 @@ class ContactPerson(BaseModel):
         email: str,
         counterparty_ref: str,
     ):
+        """
+        Update contact person.
+
+        :param ref: contact reference.
+        :param first_name: first name.
+        :param middle_name: middle name.
+        :param last_name: last name.
+        :param phone: phone.
+        :param email: email.
+        :param counterparty_ref: counterparty reference.
+        :return: response dict.
+        """
         return self._call_with_props(
             Ref=ref,
             FirstName=first_name,
@@ -51,4 +78,10 @@ class ContactPerson(BaseModel):
 
     @api_method("delete")
     def delete(self, ref: str):
+        """
+        Delete contact person.
+
+        :param ref: contact reference.
+        :return: response dict.
+        """
         return self._call_with_props(Ref=ref)

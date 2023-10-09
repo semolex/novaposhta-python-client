@@ -1,6 +1,8 @@
 """BaseModel module."""
 
-from typing import Dict, Any
+from typing import Any
+
+from ..types import DictStrAny
 
 
 def api_method(method_name: str):
@@ -21,9 +23,7 @@ def api_method(method_name: str):
 
 class BaseModel:
     """
-    Base class for model.
-    Uses NovaPoshta client to perform calls to the API and passes required
-    model name.
+    Base model class for all models.
     """
 
     name = "base"
@@ -31,13 +31,13 @@ class BaseModel:
     def __init__(self, client):
         self._client = client
 
-    def _call(self, method: str, props: Dict[str, Any]):
+    def _call(self, method: str, props: DictStrAny):
         """
         Wraps call to the API by using client. Automatically passes model name.
 
         :param method: name of the called method from API.
         :param props: payload to send to API.
-        :return: Response object.
+        :return: response dict.
         """
         return self._client.send(self.name, method, props)
 
@@ -47,6 +47,7 @@ class BaseModel:
         Filters out empty properties, convert to string and returns only those that have values.
 
         :param properties: properties to filter.
+        :return: filtered properties.
         """
         props = {
             k: str(v) if not isinstance(v, (list, dict)) else v
@@ -56,4 +57,7 @@ class BaseModel:
         return props
 
     def __str__(self):
+        """
+        String representation of the model.
+        """
         return self.name

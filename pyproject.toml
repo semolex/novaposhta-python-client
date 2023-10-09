@@ -7,13 +7,14 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 httpx = "^0.25.0"
 
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.5.1"
 black = "^23.9.1"
+sphinx = "^7.2.6"
 
 [build-system]
 requires = ["poetry-core"]

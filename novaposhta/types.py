@@ -4,9 +4,10 @@ from typing import List, Optional, Dict, Union, Any
 
 OptStr = Optional[str]
 StrOrNum = Union[str, float, int]
+DictStrAny = Dict[str, Any]
 OptStrOrNum = Optional[StrOrNum]
 OptDict = Optional[Dict[str, str]]
-OptDictList = Optional[List[Dict[str, Any]]]
+OptListOfDicts = Optional[List[Dict[str, Any]]]
 OptInt = Optional[int]
 OptBool = Optional[
     Union[bool, int]

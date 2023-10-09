@@ -1,12 +1,23 @@
 """InternetDocument model module."""
 
-from typing import List, Dict, Any, Optional
+from typing import List
 
-from novaposhta.models.base import BaseModel, api_method
-from novaposhta.types import OptStr, StrOrNum, OptDictList, OptDict, OptInt, OptStrOrNum
+from .base import BaseModel, api_method
+from ..types import (
+    OptStr,
+    StrOrNum,
+    OptListOfDicts,
+    OptDict,
+    OptInt,
+    OptStrOrNum,
+)
 
 
 class InternetDocument(BaseModel):
+    """
+    InternetDocument model class.
+    """
+
     name = "InternetDocument"
 
     def __init__(self, client):
@@ -26,9 +37,27 @@ class InternetDocument(BaseModel):
         pack_count: OptStr = None,
         pack_ref: OptStr = None,
         amount: OptStr = None,
-        cargo_details: OptDictList = None,
+        cargo_details: OptListOfDicts = None,
         cargo_description: OptStr = None,
     ):
+        """
+        Get document (delivery) price.
+
+        :param city_sender: city sender.
+        :param city_recipient: city recipient.
+        :param weight: weight.
+        :param service_type: service type.
+        :param cost: cost.
+        :param cargo_type: cargo type.
+        :param seats_amount: seats amount.
+        :param redelivery_calculate: redelivery calculate.
+        :param pack_count: pack count.
+        :param pack_ref: pack reference.
+        :param amount: amount.
+        :param cargo_details: cargo details.
+        :param cargo_description: cargo description.
+        :return: response dict.
+        """
         return self._call_with_props(
             CitySender=city_sender,
             CityRecipient=city_recipient,
@@ -53,6 +82,15 @@ class InternetDocument(BaseModel):
         service_type: str,
         date_time: OptStr = None,
     ):
+        """
+        Get document (delivery) date.
+
+        :param city_sender: city sender.
+        :param city_recipient: city recipient.
+        :param service_type: service type.
+        :param date_time: date and time.
+        :return: response dict.
+        """
         return self._call_with_props(
             CitySender=city_sender,
             CityRecipient=city_recipient,
@@ -98,12 +136,55 @@ class InternetDocument(BaseModel):
         sender_warehouse_index: OptStr = None,
         recipient_warehouse_index: OptStr = None,
         volume_general: OptStrOrNum = None,
-        options_seat: Optional[List[Dict[str, StrOrNum]]] = None,
+        options_seat: OptListOfDicts = None,
         red_box_barcode: OptStr = None,
-        backward_delivery_data: Optional[List[Dict[str, Any]]] = None,
+        backward_delivery_data: OptListOfDicts = None,
         recipient_address_note: OptStr = None,
     ):
-        """ """
+        """
+        Create document (delivery).
+
+        :param payer_type: payer type.
+        :param payment_method: payment method.
+        :param date_time: date and time.
+        :param cargo_type: cargo type.
+        :param weight: weight.
+        :param service_type: service type.
+        :param seats_amount: seats amount.
+        :param description: description.
+        :param cost: cost.
+        :param city_sender: city sender.
+        :param sender: sender.
+        :param sender_address: sender address.
+        :param contact_sender: contact sender.
+        :param senders_phone: sender's phone.
+        :param recipients_phone: recipient's phone.
+        :param city_recipient: city recipient.
+        :param recipient: recipient.
+        :param recipient_address: recipient address.
+        :param contact_recipient: contact recipient.
+        :param new_address: new address.
+        :param recipient_city_name: recipient city name.
+        :param recipient_area: recipient area.
+        :param recipient_area_regions: recipient area regions.
+        :param recipient_address_name: recipient address name.
+        :param recipient_house: recipient house.
+        :param recipient_flat: recipient flat.
+        :param recipient_name: recipient name.
+        :param recipient_type: recipient type.
+        :param settlement_type: settlement type.
+        :param ownership_form: ownership form.
+        :param recipient_contact_name: recipient contact name.
+        :param edrpou: EDRPOU.
+        :param sender_warehouse_index: sender warehouse index.
+        :param recipient_warehouse_index: recipient warehouse index.
+        :param volume_general: volume general.
+        :param options_seat: options seat.
+        :param red_box_barcode: red box barcode.
+        :param backward_delivery_data: backward delivery data.
+        :param recipient_address_note: recipient address note.
+        :return: response dict.
+        """
 
         return self._call_with_props(
             PayerType=payer_type,
@@ -172,6 +253,32 @@ class InternetDocument(BaseModel):
         recipients_phone: str,
         volume_general: OptStrOrNum = None,
     ):
+        """
+        Update document (delivery).
+
+        :param ref: reference.
+        :param payer_type: payer type.
+        :param payment_method: payment method.
+        :param date_time: date and time.
+        :param cargo_type: cargo type.
+        :param weight: weight.
+        :param service_type: service type.
+        :param seats_amount: seats amount.
+        :param description: description.
+        :param cost: cost.
+        :param city_sender: city sender.
+        :param sender: sender.
+        :param sender_address: sender address.
+        :param contact_sender: contact sender.
+        :param senders_phone: sender's phone.
+        :param city_recipient: city recipient.
+        :param recipient: recipient.
+        :param recipient_address: recipient address.
+        :param contact_recipient: contact recipient.
+        :param recipients_phone: recipient's phone.
+        :param volume_general: volume general.
+        :return: response dict.
+        """
         return self._call_with_props(
             Ref=ref,
             PayerType=payer_type,
@@ -205,6 +312,16 @@ class InternetDocument(BaseModel):
         get_full_list: bool = True,
         date_time: OptStr = None,
     ):
+        """
+        Get document (delivery) list.
+
+        :param date_time_from: date and time from.
+        :param date_time_to: date and time to.
+        :param page: page number.
+        :param get_full_list: get full list.
+        :param date_time: date and time.
+        :return: response dict.
+        """
         return self._call_with_props(
             DateTimeFrom=date_time_from,
             DateTimeTo=date_time_to,
@@ -215,10 +332,24 @@ class InternetDocument(BaseModel):
 
     @api_method("delete")
     def delete(self, document_refs: str):
+        """
+        Delete document (delivery).
+
+        :param document_refs: document references.
+        :return: response dict.
+        """
         return self._call_with_props(DocumentRefs=document_refs)
 
     @api_method("generateReport")
     def generate_report(self, document_refs: List[str], _type: str, date_time: str):
+        """
+        Generate report.
+
+        :param document_refs: document references.
+        :param _type: type.
+        :param date_time: date and time.
+        :return: response dict.
+        """
         return self._call_with_props(
             DocumentRefs=document_refs, Type=_type, DateTime=date_time
         )
