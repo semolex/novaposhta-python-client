@@ -6,7 +6,7 @@ setup(
     packages=['novaposhta'],
     url='https://github.com/semolex/novaposhta-api-client',
     install_requires=[
-        'requests',
+        'httpx',
     ],
     license='MIT',
     author='semolex (Oleksii Semeshchuk)',

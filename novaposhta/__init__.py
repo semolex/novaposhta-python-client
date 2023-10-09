@@ -1,5 +1,3 @@
-__author__ = 'semolex'
+__author__ = "semolex"
 
 from .client import NovaPoshtaApi
-
-
