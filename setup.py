@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='novaposhta-api-client',
@@ -11,5 +11,5 @@ setup(
     license='MIT',
     author='semolex (Oleksii Semeshchuk)',
     author_email='semolex@live.com',
-    description='Python client for Nova Poshta company\'s API.'
+    description='Python client for Nova Poshta API.'
 )

@@ -71,7 +71,6 @@ class AdditionalService(BaseModel):
         """
         Create return order.
 
-        ... [include other parameter descriptions here] ...
         :param int_doc_number: document number.
         :param payment_method: payment method.
         :param note: custom description.

@@ -13,7 +13,7 @@ from .models.internet_document import InternetDocument
 from .models.tracking_document import TrackingDocument
 from .types import DictStrAny
 
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Union
 
 HEADERS = {"Content-Type": "application/json"}
 
@@ -46,7 +46,7 @@ class NovaPoshtaApi:
         """
         self.api_key = api_key
         self.api_endpoint = api_endpoint
-        self.http_client = http_client
+        self.http_client = http_client.Client
         self.timeout = timeout
         self._models_pool = {}
 
@@ -67,9 +67,10 @@ class NovaPoshtaApi:
             "calledMethod": api_method,
             "methodProperties": method_props,
         }
-        response = self.http_client.post(
-            self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
-        )
+        with self.http_client() as client:
+            response = client.post(
+                self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
+            )
         return response.json()
 
     def new(self, model: Type[BaseModelType]) -> BaseModelType:
@@ -86,6 +87,14 @@ class NovaPoshtaApi:
             del self._models_pool[model.name]
         self._models_pool[model.name] = model(self)
         return self._models_pool[model.name]
+
+    def get(self, name: str) -> Union[BaseModelType, None]:
+        """
+        Get model from the pool.
+
+        :param name: name of the model to get.
+        """
+        return self._models_pool.get(name)
 
     @property
     def address(self) -> Address:
