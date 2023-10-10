@@ -18,10 +18,8 @@ testing and refinement of all possible parameter combinations.
 
 ## Installation
 
-The package will be available on PyPI soon. For now, it can be installed directly from the GitHub repository
-
 ```bash
-pip install git+https://github.com/semolex/novaposhta-python-client
+pip install novaposhta-python-client==0.1.0
 ```
 
 ## Usage
