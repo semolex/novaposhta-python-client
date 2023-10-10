@@ -1,9 +1,9 @@
-.. novaposhta-api-client documentation master file, created by
+.. novaposhta-python-client documentation master file, created by
    sphinx-quickstart on Mon Oct  9 17:10:37 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to novaposhta-api-client's documentation!
+Welcome to novaposhta-python-client's documentation!
 =================================================
 
 .. toctree::

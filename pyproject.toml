@@ -3,13 +3,23 @@ name = "novaposhta-python-client"
 packages = [
     { include = "novaposhta"}
 ]
-version = "0.1.0"
+version = "0.1.1"
 description = "Python client for Nova Poshta API"
 authors = ["Oleksii <semolex@live.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/semolex/novaposhta-python-client"
 repository = "https://github.com/semolex/novaposhta-python-client"
+keywords = [ "api", "nova-poshta", "novaposhta", "nova-poshta-api", "novaposhta-api"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: MIT License"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"

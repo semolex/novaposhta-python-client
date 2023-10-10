@@ -11,7 +11,7 @@ with emphasis on consistency and usability.
 This client is compatible with `python = "^3.9"` and aims to mirror the Nova Poshta API's endpoints, offering a 1:1
 mapping where possible. However, users should be aware of the inconsistencies and occasional ambiguities present in the
 API. This can affect the signatures of some methods, and special attention is needed when working with endpoints like
-the save method which can create different items based on the provided input.
+the `save` method from some models which can create different items based on the provided input.
 
 Efforts to enhance the consistency and robustness of the client are ongoing, and future releases will focus on thorough
 testing and refinement of all possible parameter combinations.
@@ -52,7 +52,7 @@ follows the same interface:
 from novaposhta.client import NovaPoshtaApi
 import my_http_client
 
-client = NovaPoshtaApi('my-api-token', http_client=my_http_client.Client())
+client = NovaPoshtaApi('my-api-token', http_client=my_http_client.Client)
 ```
 
 Custom client should support context manager, e.g:
@@ -106,3 +106,4 @@ poetry run pytest tests/
 
 We welcome contributions that can help in enhancing the functionality and improving the consistency of the client. For
 bugs or feature requests, please open an issue on the GitHub repository.
+Please, use `black` and `mypy` as your instrument for code formatting and type checking.

@@ -8,7 +8,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
-project = 'novaposhta-api-client'
+project = 'novaposhta-python-client'
 
 copyright = '2023, Oleksii Semeshchuk'
 author = 'Oleksii Semeshchuk'

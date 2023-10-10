@@ -1,5 +1,6 @@
 """BaseModel module."""
 
+from functools import wraps
 from typing import Any
 
 from ..types import DictStrAny
@@ -12,6 +13,7 @@ def api_method(method_name: str):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
             props = func(self, *args, **kwargs)
             return self._call(method_name, props)
