@@ -1,4 +1,4 @@
-# novaposhta-api-client
+# novaposhta-python-client
 
 A Python client for interfacing with the Nova Poshta API. Designed to provide easy access to all API functionalities
 with emphasis on consistency and usability.
@@ -21,7 +21,7 @@ testing and refinement of all possible parameter combinations.
 The package will be available on PyPI soon. For now, it can be installed directly from the GitHub repository
 
 ```bash
-pip install git+https://github.com/semolex/novaposhta-api-client
+pip install git+https://github.com/semolex/novaposhta-python-client
 ```
 
 ## Usage

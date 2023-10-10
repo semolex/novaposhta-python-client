@@ -1,10 +1,15 @@
 [tool.poetry]
-name = "novaposhta"
+name = "novaposhta-python-client"
+packages = [
+    { include = "novaposhta"}
+]
 version = "0.1.0"
 description = "Python client for Nova Poshta API"
 authors = ["Oleksii <semolex@live.com>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/semolex/novaposhta-python-client"
+repository = "https://github.com/semolex/novaposhta-python-client"
 
 [tool.poetry.dependencies]
 python = "^3.9"
