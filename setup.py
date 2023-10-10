@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='novaposhta-api-client',
@@ -6,10 +6,10 @@ setup(
     packages=['novaposhta'],
     url='https://github.com/semolex/novaposhta-api-client',
     install_requires=[
-        'requests',
+        'httpx',
     ],
     license='MIT',
     author='semolex (Oleksii Semeshchuk)',
     author_email='semolex@live.com',
-    description='Python client for Nova Poshta company\'s API.'
+    description='Python client for Nova Poshta API.'
 )

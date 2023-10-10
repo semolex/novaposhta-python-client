@@ -59,3 +59,7 @@ target/
 #PyCharm and project-related items
 .idea/
 venv/
+test.py
+.DS_Store
+docs/.DS_Store
+
