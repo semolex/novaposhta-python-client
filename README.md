@@ -41,6 +41,25 @@ return_reason = client.additional_service.get_return_reasons()
 print(settlements, my_pack_list, return_reason)
 ```
 
+## Error handling
+
+```python
+import httpx
+from novaposhta.client import NovaPoshtaApi, InvalidAPIKeyError, APIRequestError
+
+# Instantiate the client
+client = NovaPoshtaApi('my-api-token', timeout=30, raise_for_errors=True)
+
+try:
+    client.common.get_cargo_types()
+except httpx.HTTPError as error:
+    print(f"HTTP error: {error}")
+except InvalidAPIKeyError as error:
+    print(f"API expired or otherwise invalid: {error}")
+except APIRequestError as error:
+    print(f"Something else is wrong with API request: {error}")
+```
+
 ## Extending the Client
 
 ### Custom HTTP Client
