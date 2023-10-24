@@ -13,6 +13,16 @@ def test_client_send(httpx_mock):
 
     assert response == json_response
 
+def test_client_send_with_raise_for_errors_and_success(httpx_mock):
+    json_response = {"success": True}
+
+    httpx_mock.add_response(json=json_response, status_code=200)
+
+    client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, raise_for_errors=True)
+    response = client.send("test", "test", {})
+
+    assert response == json_response
+
 def test_client_send_with_raise_for_errors_and_key_problem(httpx_mock):
     json_response = {"success": False, "errors": ["API key error"]}
 
