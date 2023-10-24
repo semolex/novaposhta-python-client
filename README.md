@@ -55,7 +55,7 @@ try:
 except httpx.HTTPError as error:
     print(f"HTTP error: {error}")
 except InvalidAPIKeyError as error:
-    print(f"API expired or otherwise invalid: {error}")
+    print(f"API key expired or otherwise invalid: {error}")
 except APIRequestError as error:
     print(f"Something else is wrong with API request: {error}")
 ```
