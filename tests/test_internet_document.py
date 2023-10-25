@@ -60,6 +60,15 @@ methods_to_test = [
         "expected": "expected_response",
     },
     {
+        "method": "get_incoming_documents_by_phone",
+        "params": {
+            "date_from": "24.10.2023 00:00:00",
+            "date_to": "25.10.2023 00:00:00",
+            "limit": 100,
+        },
+        "expected": "expected_response",
+    },
+    {
         "method": "delete",
         "params": {"document_refs": "ref"},
         "expected": "expected_response",

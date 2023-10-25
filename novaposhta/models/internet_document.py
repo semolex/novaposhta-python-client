@@ -330,6 +330,27 @@ class InternetDocument(BaseModel):
             DateTime=date_time,
         )
 
+    @api_method("getIncomingDocumentsByPhone")
+    def get_incoming_documents_by_phone(
+        self,
+        date_from: OptStr = None,
+        date_to: OptStr = None,
+        limit: OptInt = None,
+    ):
+        """
+        Get incoming documents.
+
+        :param date_from: filter date from.
+        :param date_from: filter date to.
+        :param limit: maximum number of records.
+        :return: response dict.
+        """
+        return self._call_with_props(
+            DateFrom=date_from,
+            DateTo=date_to,
+            Limit=limit,
+        )
+
     @api_method("delete")
     def delete(self, document_refs: str):
         """
