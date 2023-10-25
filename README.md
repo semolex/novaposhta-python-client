@@ -19,7 +19,7 @@ testing and refinement of all possible parameter combinations.
 ## Installation
 
 ```bash
-pip install novaposhta-python-client==0.1.0
+pip install novaposhta-python-client
 ```
 
 ## Usage
