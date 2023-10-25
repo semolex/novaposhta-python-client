@@ -35,6 +35,7 @@ class NovaPoshtaApi:
         api_endpoint="https://api.novaposhta.ua/v2.0/json/",
         http_client=httpx,
         timeout=10,
+        raise_for_errors=False,
     ):
         """
         Initialize Nova Poshta API client.
@@ -43,11 +44,13 @@ class NovaPoshtaApi:
         :param api_endpoint: API endpoint to use.
         :param http_client: HTTP client to use. Defaults to httpx.
         :param timeout: Timeout for HTTP requests.
+        :param raise_for_errors: Whether to check and raise errors as exceptions.
         """
         self.api_key = api_key
         self.api_endpoint = api_endpoint
         self.http_client = http_client.Client
         self.timeout = timeout
+        self.raise_for_errors = raise_for_errors
         self._models_pool = {}
 
     def send(
@@ -71,7 +74,7 @@ class NovaPoshtaApi:
             response = client.post(
                 self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
             )
-        return response.json()
+        return self._maybe_check_errors(response.json())
 
     def new(self, model: Type[BaseModelType]) -> BaseModelType:
         """
@@ -95,6 +98,19 @@ class NovaPoshtaApi:
         :param name: name of the model to get.
         """
         return self._models_pool.get(name)
+
+    def _maybe_check_errors(self, response):
+        if not self.raise_for_errors:
+            return response
+
+        if response["success"]:
+            return response
+
+        error = response["errors"][0]
+        if error.startswith("API key"):
+            raise InvalidAPIKeyError(error)
+        else:
+            raise APIRequestError(error)
 
     @property
     def address(self) -> Address:
@@ -151,3 +167,15 @@ class NovaPoshtaApi:
         Provide access to the TrackingDocument model.
         """
         return self.new(TrackingDocument)
+
+
+class NovaPoshtaError(Exception):
+    """General Nova Poshta exception."""
+
+
+class InvalidAPIKeyError(NovaPoshtaError):
+    """Invalid API key exception."""
+
+
+class APIRequestError(NovaPoshtaError):
+    """Invalid API request exception."""
