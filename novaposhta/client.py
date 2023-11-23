@@ -11,7 +11,7 @@ from .models.common import Common
 from .models.additional_service import AdditionalService
 from .models.internet_document import InternetDocument
 from .models.tracking_document import TrackingDocument
-from .types import DictStrAny
+from .types import DictStrAny, MaybeAsync
 
 from typing import Type, TypeVar, Union
 
@@ -36,6 +36,7 @@ class NovaPoshtaApi:
         http_client=httpx,
         timeout=10,
         raise_for_errors=False,
+        async_mode=False,
     ):
         """
         Initialize Nova Poshta API client.
@@ -45,17 +46,50 @@ class NovaPoshtaApi:
         :param http_client: HTTP client to use. Defaults to httpx.
         :param timeout: Timeout for HTTP requests.
         :param raise_for_errors: Whether to check and raise errors as exceptions.
+        :param async_mode: Whether to use async mode.
         """
         self.api_key = api_key
         self.api_endpoint = api_endpoint
-        self.http_client = http_client.Client
+        self.http_client = (
+            http_client.Client if not async_mode else http_client.AsyncClient
+        )
         self.timeout = timeout
         self.raise_for_errors = raise_for_errors
+        self.async_mode = async_mode
         self._models_pool = {}
+
+        if self.async_mode:
+            self._send = self._send_async
+
+        else:
+            self._send = self._send_sync
+
+    def _send_sync(self, request: DictStrAny) -> DictStrAny:
+        """
+        Sends sync request to the API.
+
+        :param request: request dict.
+        :return: response dict.
+        """
+
+        with self.http_client() as client:
+            response = client.post(**request)
+        return self._maybe_check_errors(response.json())
+
+    async def _send_async(self, request: DictStrAny) -> DictStrAny:
+        """
+        Sends async request to the API.
+
+        :param request: request dict.
+        :return: response dict.
+        """
+        async with self.http_client() as client:
+            response = await client.post(**request)
+        return self._maybe_check_errors(response.json())
 
     def send(
         self, model_name: str, api_method: str, method_props: DictStrAny
-    ) -> DictStrAny:
+    ) -> MaybeAsync:
         """
         Sends request to the API.
 
@@ -64,17 +98,19 @@ class NovaPoshtaApi:
         :param method_props: properties to pass to the method.
         :return: response dict.
         """
-        request = {
+        data = {
             "apiKey": self.api_key,
             "modelName": model_name,
             "calledMethod": api_method,
             "methodProperties": method_props,
         }
-        with self.http_client() as client:
-            response = client.post(
-                self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
-            )
-        return self._maybe_check_errors(response.json())
+        request = {
+            "url": self.api_endpoint,
+            "headers": HEADERS,
+            "json": data,
+            "timeout": self.timeout,
+        }
+        return self._send(request)
 
     def new(self, model: Type[BaseModelType]) -> BaseModelType:
         """

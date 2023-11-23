@@ -1,10 +1,11 @@
 """Type aliases for novaposhta package."""
 
-from typing import List, Optional, Dict, Union, Any
+from typing import List, Optional, Dict, Union, Any, Coroutine
 
 OptStr = Optional[str]
 StrOrNum = Union[str, float, int]
 DictStrAny = Dict[str, Any]
+MaybeAsync = Union[DictStrAny, Coroutine[Any, Any, Any]]
 OptStrOrNum = Optional[StrOrNum]
 OptDict = Optional[Dict[str, str]]
 OptListOfDicts = Optional[List[Dict[str, Any]]]
