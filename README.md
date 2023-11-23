@@ -41,6 +41,19 @@ return_reason = client.additional_service.get_return_reasons()
 print(settlements, my_pack_list, return_reason)
 ```
 
+EXPERIMENTAL: You can also use async client:
+
+```python
+import asyncio
+from novaposhta.client import NovaPoshtaApi
+
+async_client = NovaPoshtaApi('my-api-token', timeout=30, async_mode=True)
+a_address = async_client.address
+a_settlement = asyncio.run(a_address.search_settlements(city_name='Київ', limit=5))
+print(a_settlement)
+```
+This is an experimental feature and a subject to change.
+
 ## Error handling
 
 ```python
