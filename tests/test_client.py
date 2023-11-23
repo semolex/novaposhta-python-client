@@ -13,6 +13,7 @@ def test_client_send(httpx_mock):
 
     assert response == json_response
 
+
 def test_client_send_with_raise_for_errors_and_success(httpx_mock):
     json_response = {"success": True}
 
@@ -23,6 +24,7 @@ def test_client_send_with_raise_for_errors_and_success(httpx_mock):
 
     assert response == json_response
 
+
 def test_client_send_with_raise_for_errors_and_key_problem(httpx_mock):
     json_response = {"success": False, "errors": ["API key error"]}
 
@@ -32,6 +34,7 @@ def test_client_send_with_raise_for_errors_and_key_problem(httpx_mock):
     with pytest.raises(InvalidAPIKeyError):
         client.send("test", "test", {})
 
+
 def test_client_send_with_raise_for_errors_and_other_problem(httpx_mock):
     json_response = {"success": False, "errors": ["Some kind of error"]}
 
@@ -40,6 +43,7 @@ def test_client_send_with_raise_for_errors_and_other_problem(httpx_mock):
     client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, raise_for_errors=True)
     with pytest.raises(APIRequestError):
         client.send("test", "test", {})
+
 
 def test_client_new_get(httpx_mock):
     json_response = {"success": True}
@@ -76,3 +80,17 @@ def test_has_models():
     assert client.internet_document
     assert client.scan_sheet
     assert client.tracking_document
+
+
+@pytest.mark.asyncio
+async def test_async_client_new_get(httpx_mock):
+    json_response = {"OK": 200}
+
+    httpx_mock.add_response(json=json_response, status_code=200)
+
+    client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, async_mode=True)
+    model = client.new(MockModel)
+    saved_model = client.get(MockModel.name)
+
+    assert model == saved_model
+    assert await model.test() == json_response
