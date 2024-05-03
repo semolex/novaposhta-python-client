@@ -56,9 +56,9 @@ class NovaPoshtaApi:
         self.timeout = timeout
         self._send: Callable[[DictStrAny], MaybeAsync]
         if async_mode:
-            self.async_http_client: Optional[
-                httpx.AsyncClient
-            ] = http_client.AsyncClient(timeout=timeout)
+            self.async_http_client: Optional[httpx.AsyncClient] = (
+                http_client.AsyncClient(timeout=timeout)
+            )
             self._send = self._send_async
         else:
             self.sync_http_client: Optional[httpx.Client] = http_client.Client(
