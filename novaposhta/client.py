@@ -1,19 +1,19 @@
 """Client for Nova Poshta API. """
 
+from typing import Type, TypeVar, Optional, Callable
+
 import httpx
 
-from .models.base import BaseModel
-from .models.address import Address
-from .models.counterparty import Counterparty
-from .models.contact_person import ContactPerson
-from .models.scan_sheet import ScanSheet
-from .models.common import Common
 from .models.additional_service import AdditionalService
+from .models.address import Address
+from .models.base import BaseModel
+from .models.common import Common
+from .models.contact_person import ContactPerson
+from .models.counterparty import Counterparty
 from .models.internet_document import InternetDocument
+from .models.scan_sheet import ScanSheet
 from .models.tracking_document import TrackingDocument
 from .types import DictStrAny, MaybeAsync
-
-from typing import Type, TypeVar, Union
 
 HEADERS = {"Content-Type": "application/json"}
 
@@ -29,14 +29,17 @@ class NovaPoshtaApi:
     https://developers.novaposhta.ua/documentation
     """
 
+    sync_http_client: Optional[httpx.Client] = None
+    async_http_client: Optional[httpx.AsyncClient] = None
+
     def __init__(
         self,
-        api_key,
-        api_endpoint="https://api.novaposhta.ua/v2.0/json/",
+        api_key: str,
+        api_endpoint: str = "https://api.novaposhta.ua/v2.0/json/",
         http_client=httpx,
-        timeout=10,
-        raise_for_errors=False,
-        async_mode=False,
+        timeout: int = 10,
+        raise_for_errors: bool = False,
+        async_mode: bool = False,
     ):
         """
         Initialize Nova Poshta API client.
@@ -50,19 +53,21 @@ class NovaPoshtaApi:
         """
         self.api_key = api_key
         self.api_endpoint = api_endpoint
-        self.http_client = (
-            http_client.Client if not async_mode else http_client.AsyncClient
-        )
         self.timeout = timeout
+        self._send: Callable[[DictStrAny], MaybeAsync]
+        if async_mode:
+            self.async_http_client: Optional[
+                httpx.AsyncClient
+            ] = http_client.AsyncClient(timeout=timeout)
+            self._send = self._send_async
+        else:
+            self.sync_http_client: Optional[httpx.Client] = http_client.Client(
+                timeout=timeout
+            )
+            self._send = self._send_sync
         self.raise_for_errors = raise_for_errors
         self.async_mode = async_mode
-        self._models_pool = {}
-
-        if self.async_mode:
-            self._send = self._send_async
-
-        else:
-            self._send = self._send_sync
+        self._models_pool: DictStrAny = {}
 
     def _send_sync(self, request: DictStrAny) -> DictStrAny:
         """
@@ -71,9 +76,9 @@ class NovaPoshtaApi:
         :param request: request dict.
         :return: response dict.
         """
-
-        with self.http_client() as client:
-            response = client.post(**request)
+        if not self.sync_http_client:
+            raise ValueError("Sync client is not initialized")
+        response = self.sync_http_client.post(**request)
         return self._maybe_check_errors(response.json())
 
     async def _send_async(self, request: DictStrAny) -> DictStrAny:
@@ -83,8 +88,9 @@ class NovaPoshtaApi:
         :param request: request dict.
         :return: response dict.
         """
-        async with self.http_client() as client:
-            response = await client.post(**request)
+        if not self.async_http_client:
+            raise ValueError("Async client is not initialized")
+        response: httpx.Response = await self.async_http_client.post(**request)
         return self._maybe_check_errors(response.json())
 
     def send(
@@ -127,7 +133,7 @@ class NovaPoshtaApi:
         self._models_pool[model.name] = model(self)
         return self._models_pool[model.name]
 
-    def get(self, name: str) -> Union[BaseModelType, None]:
+    def get(self, name: str) -> Optional[BaseModel]:
         """
         Get model from the pool.
 
@@ -135,7 +141,13 @@ class NovaPoshtaApi:
         """
         return self._models_pool.get(name)
 
-    def _maybe_check_errors(self, response):
+    def _maybe_check_errors(self, response: DictStrAny) -> DictStrAny:
+        """
+        Check response for errors.
+
+        :param response: response dict.
+        :return: response dict.
+        """
         if not self.raise_for_errors:
             return response
 
@@ -147,6 +159,45 @@ class NovaPoshtaApi:
             raise InvalidAPIKeyError(error)
         else:
             raise APIRequestError(error)
+
+    def close_sync(self):
+        """
+        Close sync client.
+        """
+        if self.sync_http_client:
+            self.sync_http_client.close()
+
+    async def close_async(self):
+        """
+        Close async client.
+        """
+        if self.async_http_client:
+            await self.async_http_client.aclose()
+
+    def __enter__(self):
+        """
+        Enter the context.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exit the context.
+        Close the client.
+        """
+        self.close_sync()
+
+    async def __aenter__(self):
+        """
+        Enter the async context.
+        """
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exit the async context.
+        """
+        await self.close_async()
 
     @property
     def address(self) -> Address:

@@ -58,6 +58,20 @@ def test_client_new_get(httpx_mock):
     assert model.test() == json_response
 
 
+def test_client_context_manager(httpx_mock):
+    json_response = {"success": True}
+
+    httpx_mock.add_response(json=json_response, status_code=200)
+
+    with NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI) as client:
+        model = client.new(MockModel)
+        saved_model = client.get(MockModel.name)
+
+        assert model == saved_model
+        assert model.test() == json_response
+    assert client.sync_http_client.is_closed
+
+
 def test_client_reset():
     client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI)
     model = client.new(MockModel)
@@ -94,3 +108,20 @@ async def test_async_client_new_get(httpx_mock):
 
     assert model == saved_model
     assert await model.test() == json_response
+
+
+@pytest.mark.asyncio
+async def test_async_client_context_manager(httpx_mock):
+    json_response = {"OK": 200}
+
+    httpx_mock.add_response(json=json_response, status_code=200)
+
+    async with NovaPoshtaApi(
+        TEST_API_KEY, api_endpoint=TEST_URI, async_mode=True
+    ) as client:
+        model = client.new(MockModel)
+        saved_model = client.get(MockModel.name)
+
+        assert model == saved_model
+        assert await model.test() == json_response
+    assert client.async_http_client.is_closed
