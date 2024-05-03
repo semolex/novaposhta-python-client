@@ -39,7 +39,9 @@ return_reason = client.additional_service.get_return_reasons()
 
 # Print results
 print(settlements, my_pack_list, return_reason)
+client.close_sync()
 ```
+Please, close the client whenever you are done with it to avoid resource leaks.
 
 You can also use async client:
 
@@ -47,10 +49,28 @@ You can also use async client:
 import asyncio
 from novaposhta.client import NovaPoshtaApi
 
-async_client = NovaPoshtaApi('my-api-token', timeout=30, async_mode=True)
-a_address = async_client.address
-a_settlement = asyncio.run(a_address.search_settlements(city_name='Київ', limit=5))
-print(a_settlement)
+async def use_api_async():
+    async_client = NovaPoshtaApi('your_api_key', timeout=30, async_mode=True, raise_for_errors=True)
+    address = async_client.address
+    settlements = await address.search_settlements(city_name='Київ', limit=5)
+    print(settlements)
+    await async_client.close_async()
+asyncio.run(use_api_async())
+```
+
+You can use context manager to automatically close the client:
+
+```python
+from novaposhta.client import NovaPoshtaApi
+def use_api_sync():
+    with NovaPoshtaApi(api_key='your_api_key', async_mode=False) as api:
+        # Do something with the API
+        pass
+
+async def use_api_async():
+    async with NovaPoshtaApi(api_key='your_api_key', async_mode=True) as api:
+        # Do something with the API
+        pass
 ```
 
 ## Error handling
@@ -60,7 +80,7 @@ import httpx
 from novaposhta.client import NovaPoshtaApi, InvalidAPIKeyError, APIRequestError
 
 # Instantiate the client
-client = NovaPoshtaApi('my-api-token', timeout=30, raise_for_errors=True)
+client = NovaPoshtaApi('your_api_key', timeout=30, raise_for_errors=True)
 
 try:
     client.common.get_cargo_types()
@@ -83,16 +103,7 @@ follows the same interface:
 from novaposhta.client import NovaPoshtaApi
 import my_http_client
 
-client = NovaPoshtaApi('my-api-token', http_client=my_http_client.Client)
-```
-
-Custom client should support context manager, e.g:
-
-```python
-with self.http_client() as client:
-    response = client.post(
-        self.api_endpoint, json=request, headers=HEADERS, timeout=self.timeout
-    )
+client = NovaPoshtaApi('your_api_key', http_client=my_http_client.Client)
 ```
 
 ### Adding New Methods
