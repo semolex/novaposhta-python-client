@@ -3,7 +3,11 @@ name = "novaposhta-python-client"
 packages = [
     { include = "novaposhta"}
 ]
+<<<<<<< Updated upstream
 version = "0.1.5"
+=======
+version = "0.1.7"
+>>>>>>> Stashed changes
 description = "Python client for Nova Poshta API"
 authors = ["Oleksii <semolex@live.com>"]
 license = "MIT"
