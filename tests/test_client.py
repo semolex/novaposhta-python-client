@@ -58,6 +58,17 @@ def test_client_new_get(httpx_mock):
     assert model.test() == json_response
 
 
+def test_client_unexpected_error_format(httpx_mock):
+    json_response = {"success": False, "errors": {"0": "Some kind of error", "1": "Another error"}}
+
+    httpx_mock.add_response(json=json_response, status_code=200)
+
+    client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, raise_for_errors=True)
+    model = client.new(MockModel)
+    with pytest.raises(APIRequestError):
+        model.test()
+
+
 def test_client_context_manager(httpx_mock):
     json_response = {"success": True}
 
