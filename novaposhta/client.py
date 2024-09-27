@@ -153,9 +153,14 @@ class NovaPoshtaApi:
 
         if response["success"]:
             return response
+        errors = response["errors"]
+        error = ""
+        if isinstance(errors, list):
+            error = ", ".join(errors)
+        elif isinstance(errors, dict):
+            error = ", ".join([f"{k}: {v}" for k, v in errors.items()])
 
-        error = response["errors"][0]
-        if error.startswith("API key"):
+        if "API key" in error:
             raise InvalidAPIKeyError(error)
         else:
             raise APIRequestError(error)
