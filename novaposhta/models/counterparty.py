@@ -1,8 +1,7 @@
 """Counterparty model module."""
 
-from .base import BaseModel, api_method
-
 from ..types import OptStr
+from .base import BaseModel, api_method
 
 
 class Counterparty(BaseModel):

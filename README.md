@@ -139,7 +139,8 @@ my_custom_model = client.get(MyCustomModel.name)
 ## Testing and linting
 
 ```bash
-poetry run black novaposhta
+poetry run black novaposhta/
+poetry run isort novaposhta/
 poetry run mypy novaposhta/
 poetry run pytest tests/
 ```
@@ -148,4 +149,4 @@ poetry run pytest tests/
 
 We welcome contributions that can help in enhancing the functionality and improving the consistency of the client. For
 bugs or feature requests, please open an issue on the GitHub repository.
-Please, use `black` and `mypy` as your instrument for code formatting and type checking.
+Please, use `black`, `isort` and `mypy` as your instrument for code formatting and type checking.

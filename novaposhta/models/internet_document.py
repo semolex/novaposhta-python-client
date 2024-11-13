@@ -2,15 +2,8 @@
 
 from typing import List
 
+from ..types import OptDict, OptInt, OptListOfDicts, OptStr, OptStrOrNum, StrOrNum
 from .base import BaseModel, api_method
-from ..types import (
-    OptStr,
-    StrOrNum,
-    OptListOfDicts,
-    OptDict,
-    OptInt,
-    OptStrOrNum,
-)
 
 
 class InternetDocument(BaseModel):

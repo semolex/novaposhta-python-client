@@ -1,8 +1,8 @@
 """TrackingDocument model module."""
 
-from .base import BaseModel, api_method
+from typing import Dict, List
 
-from typing import List, Dict
+from .base import BaseModel, api_method
 
 
 class TrackingDocument(BaseModel):

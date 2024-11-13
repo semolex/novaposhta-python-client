@@ -1,8 +1,7 @@
 """Address model module."""
 
+from ..types import OptBool, OptStr
 from .base import BaseModel, api_method
-
-from ..types import OptStr, OptBool
 
 
 class Address(BaseModel):

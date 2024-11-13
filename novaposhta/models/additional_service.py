@@ -1,8 +1,7 @@
 """AdditionalService model module."""
 
-from .base import BaseModel, api_method
-
 from ..types import OptStr, StrOrNum
+from .base import BaseModel, api_method
 
 
 class AdditionalService(BaseModel):

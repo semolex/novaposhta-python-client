@@ -1,5 +1,5 @@
-from novaposhta.models.base import BaseModel, api_method
 from novaposhta.client import NovaPoshtaApi
+from novaposhta.models.base import BaseModel, api_method
 
 TEST_URI = "https://api.test-novaposhta.ua/v2.0/json/"
 TEST_API_KEY = "test"

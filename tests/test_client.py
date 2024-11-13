@@ -1,6 +1,8 @@
-from novaposhta.client import NovaPoshtaApi, InvalidAPIKeyError, APIRequestError
-from tests.helpers import TEST_URI, TEST_API_KEY, MockModel
 import pytest
+
+from novaposhta.client import (APIRequestError, InvalidAPIKeyError,
+                               NovaPoshtaApi)
+from tests.helpers import TEST_API_KEY, TEST_URI, MockModel
 
 
 def test_client_send(httpx_mock):
@@ -59,7 +61,10 @@ def test_client_new_get(httpx_mock):
 
 
 def test_client_unexpected_error_format(httpx_mock):
-    json_response = {"success": False, "errors": {"0": "Some kind of error", "1": "Another error"}}
+    json_response = {
+        "success": False,
+        "errors": {"0": "Some kind of error", "1": "Another error"},
+    }
 
     httpx_mock.add_response(json=json_response, status_code=200)
 
@@ -136,3 +141,22 @@ async def test_async_client_context_manager(httpx_mock):
         assert model == saved_model
         assert await model.test() == json_response
     assert client.async_http_client.is_closed
+
+
+def test_client_init_validation():
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(None, api_endpoint=TEST_URI)
+    with pytest.raises(ValueError):
+        NovaPoshtaApi("", api_endpoint=TEST_URI)
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint=None)
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint="")
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint="tcp://localhost")
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, timeout=-1)
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, timeout=0)
+    with pytest.raises(ValueError):
+        NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, timeout=0, async_mode=True)

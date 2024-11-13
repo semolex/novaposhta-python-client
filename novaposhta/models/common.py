@@ -1,8 +1,7 @@
 """Common model module."""
 
+from ..types import OptInt, OptStr
 from .base import BaseModel, api_method
-
-from ..types import OptStr, OptInt
 
 
 class Common(BaseModel):

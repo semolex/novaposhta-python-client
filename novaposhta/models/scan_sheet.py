@@ -1,7 +1,8 @@
 """ScanSheet model module."""
 
-from .base import BaseModel, api_method
 from typing import List
+
+from .base import BaseModel, api_method
 
 
 class ScanSheet(BaseModel):

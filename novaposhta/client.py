@@ -1,6 +1,6 @@
 """Client for Nova Poshta API. """
 
-from typing import Type, TypeVar, Optional, Callable
+from typing import Callable, Final, Optional, Type, TypeVar
 
 import httpx
 
@@ -13,9 +13,11 @@ from .models.counterparty import Counterparty
 from .models.internet_document import InternetDocument
 from .models.scan_sheet import ScanSheet
 from .models.tracking_document import TrackingDocument
-from .types import DictStrAny, MaybeAsync
+from .types import DictStrAny, HttpRequest, MaybeAsync, RequestData, RequestSender
 
-HEADERS = {"Content-Type": "application/json"}
+HEADERS: Final[dict[str, str]] = {"Content-Type": "application/json"}
+API_DEFAULT_ENDPOINT: Final[str] = "https://api.novaposhta.ua/v2.0/json/"
+DEFAULT_TIMEOUT: Final[int] = 10
 
 BaseModelType = TypeVar("BaseModelType", bound=BaseModel)
 
@@ -35,7 +37,7 @@ class NovaPoshtaApi:
     def __init__(
         self,
         api_key: str,
-        api_endpoint: str = "https://api.novaposhta.ua/v2.0/json/",
+        api_endpoint: str = API_DEFAULT_ENDPOINT,
         http_client=httpx,
         timeout: int = 10,
         raise_for_errors: bool = False,
@@ -51,10 +53,17 @@ class NovaPoshtaApi:
         :param raise_for_errors: Whether to check and raise errors as exceptions.
         :param async_mode: Whether to use async mode.
         """
+        if not api_key:
+            raise ValueError("API key is required")
+        if timeout <= 0:
+            raise ValueError("Timeout must be positive")
+        if not api_endpoint or not api_endpoint.startswith(("http://", "https://")):
+            raise ValueError("Invalid API endpoint URL")
+
         self.api_key = api_key
         self.api_endpoint = api_endpoint
         self.timeout = timeout
-        self._send: Callable[[DictStrAny], MaybeAsync]
+        self._send: RequestSender
         if async_mode:
             self.async_http_client: Optional[httpx.AsyncClient] = (
                 http_client.AsyncClient(timeout=timeout)
@@ -65,11 +74,12 @@ class NovaPoshtaApi:
                 timeout=timeout
             )
             self._send = self._send_sync
+            self._send = self._send_sync
         self.raise_for_errors = raise_for_errors
         self.async_mode = async_mode
         self._models_pool: DictStrAny = {}
 
-    def _send_sync(self, request: DictStrAny) -> DictStrAny:
+    def _send_sync(self, request: HttpRequest) -> DictStrAny:
         """
         Sends sync request to the API.
 
@@ -81,7 +91,7 @@ class NovaPoshtaApi:
         response = self.sync_http_client.post(**request)
         return self._maybe_check_errors(response.json())
 
-    async def _send_async(self, request: DictStrAny) -> DictStrAny:
+    async def _send_async(self, request: HttpRequest) -> DictStrAny:
         """
         Sends async request to the API.
 
@@ -104,13 +114,13 @@ class NovaPoshtaApi:
         :param method_props: properties to pass to the method.
         :return: response dict.
         """
-        data = {
+        data: RequestData = {
             "apiKey": self.api_key,
             "modelName": model_name,
             "calledMethod": api_method,
             "methodProperties": method_props,
         }
-        request = {
+        request: HttpRequest = {
             "url": self.api_endpoint,
             "headers": HEADERS,
             "json": data,
@@ -147,23 +157,29 @@ class NovaPoshtaApi:
 
         :param response: response dict.
         :return: response dict.
+        :raises InvalidAPIKeyError: if API key is invalid
+        :raises APIRequestError: if any other API error occurs
         """
         if not self.raise_for_errors:
             return response
 
         if response["success"]:
             return response
-        errors = response["errors"]
-        error = ""
-        if isinstance(errors, list):
-            error = ", ".join(errors)
-        elif isinstance(errors, dict):
-            error = ", ".join([f"{k}: {v}" for k, v in errors.items()])
 
-        if "API key" in error:
-            raise InvalidAPIKeyError(error)
-        else:
-            raise APIRequestError(error)
+        errors = response["errors"]
+        error_msg = (
+            ", ".join(errors)
+            if isinstance(errors, list)
+            else (
+                ", ".join(f"{k}: {v}" for k, v in errors.items())
+                if isinstance(errors, dict)
+                else str(errors)
+            )
+        )
+
+        if "API key" in error_msg:
+            raise InvalidAPIKeyError(error_msg)
+        raise APIRequestError(error_msg)
 
     def close_sync(self):
         """
