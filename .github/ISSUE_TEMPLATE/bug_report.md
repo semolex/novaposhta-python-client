@@ -1,15 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve client
-title: "[BUG]"
-labels: bug
-assignees: ''
-
----
-
----
-name: Bug report
-about: Create a report to help us improve the API client library
+about: Create a report to help us improve this library
 title: '[BUG] '
 labels: bug
 assignees: ''

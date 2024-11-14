@@ -1,6 +1,6 @@
 ---
 name: Other
-about: Other questions and proposals related to library
+about: Other questions and proposals related to this library
 title: "[QUESTION]"
 labels: help wanted, question
 assignees: ''
