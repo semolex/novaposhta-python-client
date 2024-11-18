@@ -29,6 +29,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: List all changed files tracked and untracked files
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "Changed files: $CHANGED_FILES"    
+
       - name: Load cached Poetry installation
         id: cached-poetry
         uses: actions/cache@v4
@@ -64,7 +70,7 @@ jobs:
       - name: Commit files
         if: >-
           env.SHOULD_UPDATE_BADGE == 'true' &&
-          steps.verify-changed-files.outputs.files_changed == 'true'
+          env.CHANGED_FILES != ''
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
