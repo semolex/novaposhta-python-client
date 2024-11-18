@@ -1,0 +1,81 @@
+name: Test
+permissions:
+  contents: write
+  pull-requests: read
+  actions: read
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SHOULD_UPDATE_BADGE: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Load cached Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v4
+        with:
+          path: ~/.local  # the path depends on the OS
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+      - name: Install Poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run tests with pytest-cov
+        run: |
+          poetry run pytest --cov=novaposhta tests/ --cov-report=term-missing --cov-fail-under=90
+
+      - name: Update coverage badge
+        if: env.SHOULD_UPDATE_BADGE == 'true'
+        uses: tj-actions/coverage-badge-py@v2
+
+      - name: Verify Changed files
+        if: env.SHOULD_UPDATE_BADGE == 'true'
+        uses: tj-actions/verify-changed-files@v16
+        id: verify-changed-files
+        with:
+          files: coverage.svg
+
+      - name: Commit files
+        if: >-
+          env.SHOULD_UPDATE_BADGE == 'true' &&
+          steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add coverage.svg
+          git commit -m "Updated coverage.svg"
+
+      - name: Push changes
+        if: >-
+          env.SHOULD_UPDATE_BADGE == 'true' &&
+          steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          branch: ${{ github.ref }}

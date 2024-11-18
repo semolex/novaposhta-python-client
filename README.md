@@ -3,8 +3,14 @@
 A Python client for interfacing with the Nova Poshta API. Designed to provide easy access to all API functionalities
 with emphasis on consistency and usability.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Tests](https://github.com/semolex/novaposhta-python-client/actions/workflows/tests.yml/badge.svg)](https://github.com/semolex/novaposhta-python-client/actions/workflows/tests.yml)
+[![License](https://img.shields.io/github/license/semolex/novaposhta-python-client)](https://github.com/semolex/novaposhta-python-client/blob/master/LICENSE.md)
+[![PyPI](https://img.shields.io/pypi/v/novaposhta-python-client)](https://pypi.org/project/novaposhta-python-client/)
+[![Downloads](https://pepy.tech/badge/novaposhta-python-client)](https://pepy.tech/project/novaposhta-python-client)
+[![Downloads](https://pepy.tech/badge/novaposhta-python-client/month)](https://pepy.tech/project/novaposhta-python-client)
+[![Python Versions](https://img.shields.io/pypi/pyversions/novaposhta-python-client.svg)](https://pypi.org/project/novaposhta-python-client/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1)](https://pycqa.github.io/isort/)
 
 ## Description
 
@@ -137,12 +143,12 @@ my_custom_model = client.get(MyCustomModel.name)
 ```
 
 ## Testing and linting
-
+Note: install dev dependencies first
 ```bash
 poetry run black novaposhta/
 poetry run isort novaposhta/
 poetry run mypy novaposhta/
-poetry run pytest tests/
+poetry run pytest --cov=novaposhta tests/
 ```
 
 ## Contributing
