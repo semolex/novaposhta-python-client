@@ -13,8 +13,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      SHOULD_UPDATE_BADGE: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
     strategy:
       matrix:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
@@ -49,33 +47,3 @@ jobs:
       - name: Run tests with pytest-cov
         run: |
           poetry run pytest --cov=novaposhta tests/ --cov-report=term-missing --cov-fail-under=90
-
-      - name: Update coverage badge
-        if: env.SHOULD_UPDATE_BADGE == 'true'
-        uses: tj-actions/coverage-badge-py@v2
-
-      - name: Verify Changed files
-        if: env.SHOULD_UPDATE_BADGE == 'true'
-        uses: tj-actions/verify-changed-files@v16
-        id: verify-changed-files
-        with:
-          files: coverage.svg
-
-      - name: Commit files
-        if: >-
-          env.SHOULD_UPDATE_BADGE == 'true' &&
-          steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add coverage.svg
-          git commit -m "Updated coverage.svg"
-
-      - name: Push changes
-        if: >-
-          env.SHOULD_UPDATE_BADGE == 'true' &&
-          steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.github_token }}
-          branch: ${{ github.ref }}
