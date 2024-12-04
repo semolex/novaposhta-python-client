@@ -142,6 +142,86 @@ To get your custom model instance, use the get method:
 my_custom_model = client.get(MyCustomModel.name)
 ```
 
+## Experimental: Chain Operations
+
+The chain functionality allows you to sequence multiple API operations, where each operation's output can be transformed and passed to the next operation. This is particularly useful for scenarios that require multiple dependent API calls, like searching for addresses or creating shipments.
+Each result of `prepare_next` is passed to the next operation as updated `kwargs`.
+> ⚠️ **Note**: This feature is experimental and currently optimized for async usage.
+
+### Basic Usage
+
+```python
+from novaposhta.client import NovaPoshtaApi
+from novaposhta.chains import Chain 
+
+# Initialize client in async mode
+client = NovaPoshtaApi("API_KEY", async_mode=True)
+
+# Create a chain of operations
+chain = (
+    Chain(
+        client.address.get_areas,
+        prepare_next=lambda x: {'ref': x['data'][0]['AreasCenter']}
+    ) |
+    Chain(
+        client.address.get_cities,
+        prepare_next=lambda x: {'city_ref': x['data'][0]['Ref']}
+    ) |
+    Chain(
+        client.address.get_street,
+        kwargs={'find_by_string': 'Street Name'}
+    )
+)
+
+# Execute chain
+results = await chain.execute_async()
+```
+
+### Features
+
+- Chain multiple API operations using the `|` operator
+- Transform operation results for next operation using `prepare_next`
+- Automatic error handling and chain interruption on failure
+- Preserve both original API responses and transformed data
+- Initial parameters via `kwargs`
+
+### Common Patterns
+
+```python
+# Address search chain
+from novaposhta.client import NovaPoshtaApi
+
+client = NovaPoshtaApi("API_KEY", async_mode=True)
+from novaposhta.chains import Chain
+address = client.address
+chain = (
+    Chain(
+        address.search_settlements,
+        kwargs={'city_name': 'Київ'},
+        prepare_next=lambda x: {'settlement_ref': x['data'][0]['Ref']}
+    ) |
+    Chain(
+        address.search_settlement_streets,
+        kwargs={'street_name': 'Main'}
+    )
+)
+
+# Execute and process results
+results = await chain.execute_async()
+for result in results:
+    print(f"Success: {result.success}")
+    print(f"Data: {result.data}")
+    print(f"Next kwargs: {result.next_kwargs}")
+```
+
+### Limitations
+
+- Currently optimized for async usage
+- Experimental API that may change
+- Sequential execution only (no parallel operations)
+
+
+
 ## Testing and linting
 Note: install dev dependencies first
 ```bash

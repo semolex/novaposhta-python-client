@@ -1,6 +1,6 @@
 """Client for Nova Poshta API. """
 
-from typing import Callable, Final, Optional, Type, TypeVar
+from typing import Final, Optional, Type, TypeVar
 
 import httpx
 

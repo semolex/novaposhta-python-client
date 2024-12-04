@@ -7,6 +7,7 @@ class RequestData(TypedDict):
     """
     Request data for Nova Poshta API.
     """
+
     apiKey: str
     modelName: str
     calledMethod: str
@@ -17,6 +18,7 @@ class HttpRequest(TypedDict):
     """
     Request data for HTTP client.
     """
+
     url: str
     headers: Dict[str, str]
     json: RequestData
