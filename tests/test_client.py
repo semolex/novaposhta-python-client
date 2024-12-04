@@ -133,7 +133,7 @@ async def test_async_client_context_manager(httpx_mock):
     httpx_mock.add_response(json=json_response, status_code=200)
 
     async with NovaPoshtaApi(
-        TEST_API_KEY, api_endpoint=TEST_URI, async_mode=True
+            TEST_API_KEY, api_endpoint=TEST_URI, async_mode=True
     ) as client:
         model = client.new(MockModel)
         saved_model = client.get(MockModel.name)
@@ -160,3 +160,20 @@ def test_client_init_validation():
         NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, timeout=0)
     with pytest.raises(ValueError):
         NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, timeout=0, async_mode=True)
+
+
+@pytest.mark.asyncio
+async def test_client_fails_on_async_call_with_sync_client(httpx_mock):
+    client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI)
+    with pytest.raises(ValueError) as e:
+        req = {"url": TEST_URI, "json": {}}
+        await client._send_async(req)
+    assert "Async client is not initialized" in str(e.value)
+
+
+def test_client_fails_on_sync_call_with_async_client(httpx_mock):
+    client = NovaPoshtaApi(TEST_API_KEY, api_endpoint=TEST_URI, async_mode=True)
+    with pytest.raises(ValueError) as e:
+        req = {"url": TEST_URI, "json": {}}
+        client._send_sync(req)
+    assert "Sync client is not initialized" in str(e.value)
