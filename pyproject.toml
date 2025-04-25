@@ -3,7 +3,7 @@ name = "novaposhta-python-client"
 packages = [
     { include = "novaposhta"}
 ]
-version = "0.1.10"
+version = "0.1.11"
 description = "Python client for Nova Poshta API"
 authors = ["Oleksii <semolex@live.com>"]
 license = "MIT"
