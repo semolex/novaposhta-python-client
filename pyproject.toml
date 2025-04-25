@@ -36,6 +36,7 @@ exclude = [
 [tool.poetry.dependencies]
 python = "^3.9"
 httpx = ">=0.24.0"
+h11 = "^0.16.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.5.1"
