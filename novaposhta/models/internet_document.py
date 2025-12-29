@@ -133,6 +133,8 @@ class InternetDocument(BaseModel):
         red_box_barcode: OptStr = None,
         backward_delivery_data: OptListOfDicts = None,
         recipient_address_note: OptStr = None,
+        additional_information: OptStr = None,
+        info_reg_client_barcodes: OptStr = None,
     ):
         """
         Create document (delivery).
@@ -219,6 +221,8 @@ class InternetDocument(BaseModel):
             RedBoxBarcode=red_box_barcode,
             BackwardDeliveryData=backward_delivery_data,
             RecipientAddressNote=recipient_address_note,
+            AdditionalInformation=additional_information,
+            InfoRegClientBarcodes=info_reg_client_barcodes,
         )
 
     @api_method("update")
