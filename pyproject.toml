@@ -18,7 +18,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -34,13 +33,14 @@ exclude = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 httpx = ">=0.24.0"
 h11 = "^0.16.0"
+black = "26.3.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.5.1"
-black = "^24"
+black = "^26"
 pytest = "^7.4.2"
 pytest-httpx = "^0.26.0"
 coverage = "^7.3.2"
